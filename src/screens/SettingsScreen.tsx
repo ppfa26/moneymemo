@@ -85,32 +85,6 @@ export function SettingsScreen({ onToast }: Props) {
           </div>
         </div>
 
-        <div className="notify-list card">
-          <div className="nl-item">
-            <span className="nl-emoji">📅</span>
-            <div>
-              <div className="nl-title">경조사 하루 전 알림</div>
-              <div className="nl-sub">
-                "내일 김철수님 결혼식 — 얼마 준비할까요?"
-              </div>
-            </div>
-          </div>
-          <div className="nl-item">
-            <span className="nl-emoji">📊</span>
-            <div>
-              <div className="nl-title">월말 요약</div>
-              <div className="nl-sub">"이번 달 경조사비, 이렇게 썼어요"</div>
-            </div>
-          </div>
-          <div className="nl-item">
-            <span className="nl-emoji">🎁</span>
-            <div>
-              <div className="nl-title">명절 · 연말 정리</div>
-              <div className="nl-sub">"올해 경조사비, PDF로 정리해요"</div>
-            </div>
-          </div>
-        </div>
-
         {/* 앱 정보 */}
         <div className="section-title">
           <h2>앱 정보</h2>
@@ -128,12 +102,6 @@ export function SettingsScreen({ onToast }: Props) {
             <span className="v arrow">›</span>
           </button>
         </div>
-
-        <p className="settings-foot">
-          경조사비 메모장은 기록을 내 휴대폰에만 저장해요.
-          <br />
-          연락처를 가져오지 않아 안심하고 쓸 수 있어요.
-        </p>
       </div>
     </div>
   );

@@ -848,42 +848,6 @@ textarea.text-input {
   transform: translateX(22px);
 }
 
-/* 알림 종류 리스트 */
-.notify-list {
-  margin-top: 12px;
-}
-.nl-item {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--line);
-}
-.nl-item:last-child {
-  border-bottom: none;
-}
-.nl-item:first-child {
-  padding-top: 0;
-}
-.nl-emoji {
-  font-size: 22px;
-  width: 32px;
-  text-align: center;
-  flex-shrink: 0;
-}
-.nl-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: -0.3px;
-}
-.nl-sub {
-  margin-top: 3px;
-  font-size: 13px;
-  color: var(--text-sub);
-  line-height: 1.4;
-}
-
 .link-row {
   width: 100%;
   background: none;
@@ -892,12 +856,4 @@ textarea.text-input {
 .info-row .v.arrow {
   color: var(--text-weak);
   font-size: 20px;
-}
-.settings-foot {
-  margin-top: 24px;
-  text-align: center;
-  font-size: 13px;
-  color: var(--text-weak);
-  line-height: 1.6;
-  letter-spacing: -0.3px;
 }
