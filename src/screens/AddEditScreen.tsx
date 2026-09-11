@@ -1,11 +1,6 @@
 import { useMemo, useState } from "react";
 import { goBack, navigate } from "../router";
-import {
-  getRecord,
-  loadMeta,
-  markInterstitialShown,
-  upsertRecord,
-} from "../storage";
+import { getRecord, upsertRecord } from "../storage";
 import type {
   Direction,
   EventType,
@@ -16,12 +11,6 @@ import type {
 import { DIRECTION_LABEL, EVENT_LABEL, RELATION_LABEL } from "../types";
 import { formatMoney, todayISO, uid } from "../utils";
 import { PhotoAttach } from "../components/PhotoAttach";
-import { AD_GROUP_IDS } from "../ads/adConfig";
-import { showInterstitial } from "../ads/fullScreenAd";
-import {
-  decideInterstitialAfterSave,
-  incrementSessionCount,
-} from "../ads/interstitialPolicy";
 
 const RELATIONS: Relation[] = ["friend", "work", "family", "etc"];
 const EVENTS: EventType[] = ["wedding", "funeral", "firstbirthday", "etc"];
@@ -62,7 +51,7 @@ export function AddEditScreen({ editId, onToast }: Props) {
   const amountNum = Number(amount.replace(/[^0-9]/g, "")) || 0;
   const canSave = name.trim().length > 0 && amountNum > 0;
 
-  async function handleSave() {
+  function handleSave() {
     if (!canSave || saving) return;
     setSaving(true);
 
@@ -82,27 +71,13 @@ export function AddEditScreen({ editId, onToast }: Props) {
     };
     upsertRecord(record);
 
-    onToast(isEdit ? "수정되었어요" : "저장되었어요");
+    onToast(isEdit ? "수정했어요" : "저장했어요");
 
-    // ★ 전면광고: "저장 완료" 직후에만, 정책 통과 시에만.
-    //   장례 기록/24시간 유예/세션캡/쿨타임은 정책 함수가 막아줘요.
-    if (!isEdit) {
-      const meta = loadMeta();
-      const decision = decideInterstitialAfterSave({
-        now,
-        firstLaunchAt: meta.firstLaunchAt,
-        lastInterstitialAt: meta.lastInterstitialAt,
-        eventType,
-      });
-      if (decision.allow) {
-        incrementSessionCount();
-        markInterstitialShown();
-        // 광고는 흐름을 막지 않도록 await만 하고 결과와 무관하게 진행
-        await showInterstitial(AD_GROUP_IDS.interstitial);
-      }
-    }
+    // ★ 저장 직후에는 광고를 넣지 않아요.
+    //   "기록하기"는 앱의 핵심 액션이라 방해하면 이탈로 이어져요.
+    //   전면광고는 상세 화면을 보고 나갈 때(콘텐츠 소비 후)로 옮겼어요.
 
-    // 저장 후 상세로 이동 (추가는 replace 느낌으로 뒤로가면 홈)
+    // 저장 후 상세로 이동 (추가는 뒤로가면 홈)
     if (isEdit) {
       goBack();
     } else {

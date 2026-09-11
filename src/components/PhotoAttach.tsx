@@ -1,20 +1,16 @@
-// 사진 첨부 (건당 1~3장 무료, 4장째부터 리워드 광고로 잠금해제).
+// 사진 첨부 (최대 3장, 광고 없이 간단하게).
 //
-// ★ 이탈/심사 배려:
-//   - 리워드 광고가 미지원/실패/닫힘이어도 4장째 첨부를 열어줘요 (기능을 가두지 않음).
-//   - 사진 첨부 화면 자체엔 배너/전면 광고를 넣지 않아요.
+// ★ 간결화: 예전엔 4장째부터 리워드 광고로 잠금해제했지만,
+//   실제로 3장이면 청첩장·부고장·이체내역을 담기 충분해서 3장 고정으로 단순화했어요.
+//   사진 첨부 화면엔 어떤 광고도 넣지 않아요(이탈 방지).
 //
 // 사진은 <input type=file>로 받고 base64 data URL로 로컬 저장해요.
-// (토스 openCamera/fetchAlbumPhotos도 있지만, 심사 웹 환경 호환을 위해 파일 input 우선)
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import type { PhotoAttachment } from "../types";
 import { uid } from "../utils";
-import { AD_GROUP_IDS } from "../ads/adConfig";
-import { showRewarded } from "../ads/fullScreenAd";
 
-const FREE_LIMIT = 3;
-const HARD_LIMIT = 6; // 리워드 해제 후에도 최대 장수 (성능/저장 보호)
+const MAX_PHOTOS = 3;
 
 interface Props {
   photos: PhotoAttachment[];
@@ -33,51 +29,32 @@ function fileToDataUrl(file: File): Promise<string> {
 
 export function PhotoAttach({ photos, onChange, onToast }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [unlocked, setUnlocked] = useState(false);
-  const [busy, setBusy] = useState(false);
+  const atLimit = photos.length >= MAX_PHOTOS;
 
-  const atFreeLimit = photos.length >= FREE_LIMIT;
-  const needUnlock = atFreeLimit && !unlocked;
-  const atHardLimit = photos.length >= HARD_LIMIT;
-
-  async function handleAddClick() {
-    if (atHardLimit) {
-      onToast(`사진은 최대 ${HARD_LIMIT}장까지 첨부할 수 있어요`);
+  function handleAddClick() {
+    if (atLimit) {
+      onToast(`사진은 최대 ${MAX_PHOTOS}장까지 담을 수 있어요`);
       return;
-    }
-
-    // 4장째부터: 리워드 광고 (실패해도 열어줌)
-    if (needUnlock) {
-      setBusy(true);
-      const result = await showRewarded(AD_GROUP_IDS.rewarded);
-      setBusy(false);
-      setUnlocked(true); // ★ 어떤 결과든 잠금 해제 (기능을 가두지 않음)
-      if (result === "rewarded") {
-        onToast("오늘은 사진을 더 첨부할 수 있어요!");
-      }
     }
     inputRef.current?.click();
   }
 
   async function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
-    e.target.value = ""; // 같은 파일 재선택 허용
+    e.target.value = "";
     if (files.length === 0) return;
 
-    const room = HARD_LIMIT - photos.length;
+    const room = MAX_PHOTOS - photos.length;
     const picked = files.slice(0, room);
     const added: PhotoAttachment[] = [];
     for (const f of picked) {
       try {
-        const dataUrl = await fileToDataUrl(f);
-        added.push({ id: uid(), dataUrl });
+        added.push({ id: uid(), dataUrl: await fileToDataUrl(f) });
       } catch {
-        // 개별 실패는 건너뜀
+        /* 개별 실패는 건너뜀 */
       }
     }
-    if (added.length > 0) {
-      onChange([...photos, ...added]);
-    }
+    if (added.length > 0) onChange([...photos, ...added]);
   }
 
   function removePhoto(id: string) {
@@ -100,20 +77,10 @@ export function PhotoAttach({ photos, onChange, onToast }: Props) {
           </div>
         ))}
 
-        {!atHardLimit && (
-          <button
-            className={`photo-add ${needUnlock ? "locked" : ""}`}
-            onClick={handleAddClick}
-            disabled={busy}
-          >
+        {!atLimit && (
+          <button className="photo-add" onClick={handleAddClick}>
             <span className="plus">+</span>
-            <span>
-              {busy
-                ? "잠깐만요…"
-                : needUnlock
-                  ? "광고 보고\n더 담기"
-                  : "사진 담기"}
-            </span>
+            <span>사진 담기</span>
           </button>
         )}
       </div>
@@ -126,20 +93,6 @@ export function PhotoAttach({ photos, onChange, onToast }: Props) {
         style={{ display: "none" }}
         onChange={handleFiles}
       />
-
-      {needUnlock && (
-        <p
-          style={{
-            marginTop: 8,
-            fontSize: 12.5,
-            color: "var(--text-sub)",
-            lineHeight: 1.5,
-          }}
-        >
-          사진은 3장까지 그냥 담을 수 있어요. 더 담고 싶다면 짧은 광고만
-          보면 돼요 🙂
-        </p>
-      )}
     </div>
   );
 }
