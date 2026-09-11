@@ -9,6 +9,7 @@ import { AddEditScreen } from "./screens/AddEditScreen";
 import { DetailScreen } from "./screens/DetailScreen";
 import { ExportScreen } from "./screens/ExportScreen";
 import { SettingsScreen } from "./screens/SettingsScreen";
+import { LegalScreen } from "./screens/LegalScreen";
 import { BottomNav } from "./components/BottomNav";
 import { Toast } from "./components/Toast";
 
@@ -55,6 +56,10 @@ export default function App() {
         return <ExportScreen kind={kind} onKindChange={setKind} onToast={showToast} />;
       case "settings":
         return <SettingsScreen onToast={showToast} />;
+      case "terms":
+        return <LegalScreen kind="terms" />;
+      case "privacy":
+        return <LegalScreen kind="privacy" />;
       default:
         return <HomeScreen kind={kind} onKindChange={setKind} />;
     }

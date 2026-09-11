@@ -873,3 +873,35 @@ textarea.text-input {
   color: var(--text-weak);
   font-size: 20px;
 }
+
+/* ===== 약관/개인정보 화면 ===== */
+.legal-card {
+  padding: 18px 18px 6px;
+}
+.legal h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink, #191f28);
+  margin: 16px 0 6px;
+  letter-spacing: -0.3px;
+}
+.legal h3:first-child {
+  margin-top: 0;
+}
+.legal p {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--text-sub);
+  letter-spacing: -0.3px;
+  margin-bottom: 4px;
+}
+.legal p b {
+  color: var(--ink, #191f28);
+}
+.legal-foot {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--text-weak);
+}
