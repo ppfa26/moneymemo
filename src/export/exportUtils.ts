@@ -101,7 +101,7 @@ export function exportExcel(
   const aoa: (string | number)[][] = [
     [`머니메모 - ${label} 내역`],
     [`기간: ${fromISO} ~ ${toISO}`],
-    [`${outLabel}: ${s.out}원  /  ${inLabel}: ${s.inn}원  /  순액: ${s.net}원`],
+    [`${outLabel}: ${s.out}원  /  ${inLabel}: ${s.inn}원  /  합계: ${s.net}원`],
     [],
     header,
     ...rowsFor(kind, records),
@@ -191,7 +191,7 @@ export function exportPDF(
   <div class="summary">
     <div>${outLabel} <b>${formatMoney(s.out)}원</b></div>
     <div>${inLabel} <b>${formatMoney(s.inn)}원</b></div>
-    <div>순액 <b>${s.net >= 0 ? "+" : ""}${formatMoney(s.net)}원</b></div>
+    <div>합계 <b>${s.net >= 0 ? "+" : ""}${formatMoney(s.net)}원</b></div>
   </div>
   <table>
     <thead><tr>${headCells}</tr></thead>

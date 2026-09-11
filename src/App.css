@@ -661,7 +661,7 @@ textarea.text-input {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 8px 20px 0;
+  margin: 14px 0;
 }
 
 /* ===== 상세 정보 행 ===== */

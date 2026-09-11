@@ -69,7 +69,7 @@ export function HomeScreen({ kind, onKindChange }: Props) {
   // 탭별 문구
   const outLabel = isExpense ? "지출" : "냈어요";
   const inLabel = isExpense ? "저축·투자" : "받았어요";
-  const heroLabel = isExpense ? "이 기간 지출" : "순액(받음-냄)";
+  const heroLabel = "합계";
   const heroValue = isExpense ? out : inn - out;
   const heroPrefix = isExpense ? "" : heroValue >= 0 ? "+" : "";
 
@@ -148,11 +148,8 @@ export function HomeScreen({ kind, onKindChange }: Props) {
           </div>
         </div>
 
-        {/* 해당 기간 기록 목록 */}
-        <div className="section-title">
-          <h2>{mode === "year" ? "올해 기록" : "이번 기록"}</h2>
-          <span className="count-badge">{filtered.length}건</span>
-        </div>
+        {/* 섹션 타이틀 자리에 배너 광고 (요약 카드와 목록 사이) */}
+        <AdBanner />
 
         <div className="home-list">
           {filtered.length === 0 ? (
@@ -166,8 +163,7 @@ export function HomeScreen({ kind, onKindChange }: Props) {
         </div>
       </div>
 
-      {/* 하단 배너 + 새 기록 버튼 */}
-      <AdBanner />
+      {/* 새 기록 버튼 */}
       <div className="fixed-bottom">
         <button
           className="btn btn-primary btn-block btn-lg"

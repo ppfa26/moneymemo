@@ -172,7 +172,7 @@ export function ExportScreen({ kind, onKindChange, onToast }: Props) {
               <div className="v received">{formatMoney(s.inn)}원</div>
             </div>
             <div>
-              <div className="k">순액</div>
+              <div className="k">합계</div>
               <div className="v">
                 {s.net >= 0 ? "+" : ""}
                 {formatMoney(s.net)}원
