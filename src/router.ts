@@ -13,7 +13,8 @@ export type Route =
   | { name: "edit"; id: string }
   | { name: "list" }
   | { name: "detail"; id: string }
-  | { name: "export" };
+  | { name: "export" }
+  | { name: "settings" };
 
 function readRoute(): Route {
   const state = window.history.state as Route | null;
@@ -57,6 +58,8 @@ export function initRoute(): void {
     const screen = new URLSearchParams(window.location.search).get("screen");
     if (screen === "list") initial = { name: "list" };
     else if (screen === "export") initial = { name: "export" };
+    else if (screen === "settings") initial = { name: "settings" };
+    else if (screen === "add") initial = { name: "add" };
   } catch {
     /* noop */
   }

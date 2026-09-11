@@ -12,6 +12,8 @@ interface AppMeta {
   firstLaunchAt: number;
   /** 마지막 전면광고 노출 시각 (epoch ms) - 쿨타임 계산용 */
   lastInterstitialAt: number;
+  /** 알림 동의 여부 (앱 내 표시용 - 실제 발송은 콘솔 스마트발송) */
+  notificationAgreed: boolean;
 }
 
 function safeParse<T>(raw: string | null, fallback: T): T {
@@ -63,6 +65,7 @@ export function loadMeta(): AppMeta {
   const normalized: AppMeta = {
     firstLaunchAt: meta.firstLaunchAt ?? now,
     lastInterstitialAt: meta.lastInterstitialAt ?? 0,
+    notificationAgreed: meta.notificationAgreed ?? false,
   };
   // 최초 실행 시각이 없었으면 지금 기록
   if (meta.firstLaunchAt == null) {
@@ -78,6 +81,12 @@ export function saveMeta(meta: AppMeta): void {
 export function markInterstitialShown(): void {
   const meta = loadMeta();
   meta.lastInterstitialAt = Date.now();
+  saveMeta(meta);
+}
+
+export function setNotificationAgreed(agreed: boolean): void {
+  const meta = loadMeta();
+  meta.notificationAgreed = agreed;
   saveMeta(meta);
 }
 

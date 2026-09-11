@@ -26,9 +26,18 @@ export function HomeScreen() {
 
   return (
     <div className="page">
-      <div className="page-header">
-        <h1>경조사비 메모장</h1>
-        <div className="sub">주고받은 마음을 기록해요</div>
+      <div className="page-header home-header">
+        <div>
+          <h1>경조사비 메모장</h1>
+          <div className="sub">주고받은 마음을 기록해요</div>
+        </div>
+        <button
+          className="settings-btn"
+          onClick={() => navigate({ name: "settings" })}
+          aria-label="설정"
+        >
+          ⚙️
+        </button>
       </div>
 
       <div className="page-body">

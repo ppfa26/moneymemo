@@ -39,6 +39,26 @@
   padding: 0 20px;
 }
 
+.home-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.settings-btn {
+  font-size: 22px;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #f2f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.settings-btn:active {
+  transform: scale(0.95);
+}
+
 /* ===== 카드 ===== */
 .card {
   background: #fff;
@@ -680,4 +700,105 @@ textarea.text-input {
   line-height: 1.55;
   letter-spacing: -0.3px;
   text-align: center;
+}
+
+/* ===== 설정 화면 ===== */
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.setting-text .st-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+.setting-text .st-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+/* 토글 스위치 */
+.switch {
+  width: 52px;
+  height: 30px;
+  border-radius: 999px;
+  background: #d1d6db;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+.switch.on {
+  background: var(--orange);
+}
+.switch .knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.switch.on .knob {
+  transform: translateX(22px);
+}
+
+/* 알림 종류 리스트 */
+.notify-list {
+  margin-top: 12px;
+}
+.nl-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.nl-item:last-child {
+  border-bottom: none;
+}
+.nl-item:first-child {
+  padding-top: 0;
+}
+.nl-emoji {
+  font-size: 22px;
+  width: 32px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.nl-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+.nl-sub {
+  margin-top: 3px;
+  font-size: 13px;
+  color: var(--text-sub);
+  line-height: 1.4;
+}
+
+.link-row {
+  width: 100%;
+  background: none;
+  text-align: left;
+}
+.info-row .v.arrow {
+  color: var(--text-weak);
+  font-size: 20px;
+}
+.settings-foot {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-weak);
+  line-height: 1.6;
+  letter-spacing: -0.3px;
 }

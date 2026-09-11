@@ -8,6 +8,7 @@ import { AddEditScreen } from "./screens/AddEditScreen";
 import { ListScreen } from "./screens/ListScreen";
 import { DetailScreen } from "./screens/DetailScreen";
 import { ExportScreen } from "./screens/ExportScreen";
+import { SettingsScreen } from "./screens/SettingsScreen";
 import { BottomNav } from "./components/BottomNav";
 import { Toast } from "./components/Toast";
 
@@ -53,6 +54,8 @@ export default function App() {
         return <DetailScreen id={route.id} onToast={showToast} />;
       case "export":
         return <ExportScreen onToast={showToast} />;
+      case "settings":
+        return <SettingsScreen onToast={showToast} />;
       default:
         return <HomeScreen />;
     }
