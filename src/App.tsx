@@ -3,6 +3,7 @@ import "./App.css";
 import { initRoute, useRoute } from "./router";
 import { useSafeArea } from "./hooks/useSafeArea";
 import { loadMeta } from "./storage";
+import type { Kind } from "./types";
 import { HomeScreen } from "./screens/HomeScreen";
 import { AddEditScreen } from "./screens/AddEditScreen";
 import { DetailScreen } from "./screens/DetailScreen";
@@ -19,6 +20,8 @@ export default function App() {
   useSafeArea();
   const route = useRoute();
   const [toast, setToast] = useState<string | null>(null);
+  // 홈/내보내기에서 공유하는 활성 탭(고정지출/경조사비)
+  const [kind, setKind] = useState<Kind>("expense");
 
   const showToast = useCallback((msg: string) => setToast(msg), []);
 
@@ -41,19 +44,19 @@ export default function App() {
   function renderScreen() {
     switch (route.name) {
       case "home":
-        return <HomeScreen />;
+        return <HomeScreen kind={kind} onKindChange={setKind} />;
       case "add":
-        return <AddEditScreen onToast={showToast} />;
+        return <AddEditScreen kind={route.kind} onToast={showToast} />;
       case "edit":
         return <AddEditScreen editId={route.id} onToast={showToast} />;
       case "detail":
         return <DetailScreen id={route.id} onToast={showToast} />;
       case "export":
-        return <ExportScreen onToast={showToast} />;
+        return <ExportScreen kind={kind} onKindChange={setKind} onToast={showToast} />;
       case "settings":
         return <SettingsScreen onToast={showToast} />;
       default:
-        return <HomeScreen />;
+        return <HomeScreen kind={kind} onKindChange={setKind} />;
     }
   }
 }

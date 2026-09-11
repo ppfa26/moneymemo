@@ -1,15 +1,21 @@
 import { useMemo, useState } from "react";
 import { navigate } from "../router";
-import { loadRecords } from "../storage";
-import type { Record } from "../types";
+import { loadRecordsByKind } from "../storage";
+import type { Kind, Record } from "../types";
+import { KIND_LABEL } from "../types";
 import { formatMoney, todayISO } from "../utils";
 import { RecordItem } from "../components/RecordItem";
 import { AdBanner } from "../components/AdBanner";
 
 type Mode = "month" | "year";
 
-export function HomeScreen() {
-  const records = useMemo(() => loadRecords(), []);
+interface Props {
+  kind: Kind;
+  onKindChange: (k: Kind) => void;
+}
+
+export function HomeScreen({ kind, onKindChange }: Props) {
+  const records = useMemo(() => loadRecordsByKind(kind), [kind]);
   const today = todayISO();
   const curYear = Number(today.slice(0, 4));
   const curMonth = Number(today.slice(5, 7));
@@ -28,17 +34,16 @@ export function HomeScreen() {
     });
   }, [records, mode, year, month]);
 
-  const { received, given } = useMemo(() => {
-    let received = 0;
-    let given = 0;
+  // flow: out(나가는 돈) / in(들어오는·모이는 돈)
+  const { out, inn } = useMemo(() => {
+    let out = 0;
+    let inn = 0;
     for (const r of filtered) {
-      if (r.direction === "received") received += r.amount;
-      else given += r.amount;
+      if (r.flow === "in") inn += r.amount;
+      else out += r.amount;
     }
-    return { received, given };
+    return { out, inn };
   }, [filtered]);
-
-  const net = received - given;
 
   function shift(dir: -1 | 1) {
     if (mode === "year") {
@@ -59,12 +64,20 @@ export function HomeScreen() {
   }
 
   const periodLabel = mode === "year" ? `${year}년` : `${year}년 ${month}월`;
+  const isExpense = kind === "expense";
+
+  // 탭별 문구
+  const outLabel = isExpense ? "지출" : "냈어요";
+  const inLabel = isExpense ? "저축·투자" : "받았어요";
+  const heroLabel = isExpense ? "이 기간 지출" : "순액(받음-냄)";
+  const heroValue = isExpense ? out : inn - out;
+  const heroPrefix = isExpense ? "" : heroValue >= 0 ? "+" : "";
 
   return (
     <div className="page home-page">
       {/* 헤더 */}
       <div className="page-header home-header">
-        <h1>경조사비 메모장</h1>
+        <h1>머니메모</h1>
         <button
           className="settings-btn"
           onClick={() => navigate({ name: "settings" })}
@@ -75,6 +88,20 @@ export function HomeScreen() {
       </div>
 
       <div className="page-body home-body">
+        {/* 고정지출 / 경조사비 탭 전환 */}
+        <div className="kind-tabs">
+          {(["expense", "gift"] as Kind[]).map((k) => (
+            <button
+              key={k}
+              className={`kind-tab ${kind === k ? "active" : ""}`}
+              onClick={() => onKindChange(k)}
+            >
+              {k === "expense" ? "💳 " : "🎁 "}
+              {KIND_LABEL[k]}
+            </button>
+          ))}
+        </div>
+
         {/* 월/연도 전환 토글 */}
         <div className="mode-toggle">
           <button
@@ -103,20 +130,20 @@ export function HomeScreen() {
             </button>
           </div>
           <div className="summary-net">
-            <div className="net-label">순액</div>
+            <div className="net-label">{heroLabel}</div>
             <div className="net-value">
-              {net >= 0 ? "+" : ""}
-              {formatMoney(net)}원
+              {heroPrefix}
+              {formatMoney(heroValue)}원
             </div>
           </div>
           <div className="summary-row">
             <div className="summary-item">
-              <div className="label">받았어요</div>
-              <div className="value received">{formatMoney(received)}원</div>
+              <div className="label">{outLabel}</div>
+              <div className="value given">{formatMoney(out)}원</div>
             </div>
             <div className="summary-item">
-              <div className="label">냈어요</div>
-              <div className="value given">{formatMoney(given)}원</div>
+              <div className="label">{inLabel}</div>
+              <div className="value received">{formatMoney(inn)}원</div>
             </div>
           </div>
         </div>
@@ -130,7 +157,7 @@ export function HomeScreen() {
         <div className="home-list">
           {filtered.length === 0 ? (
             <div className="empty">
-              <div className="emoji">📝</div>
+              <div className="emoji">{isExpense ? "💳" : "📝"}</div>
               <div className="msg">이 기간엔 기록이 없어요</div>
             </div>
           ) : (
@@ -144,9 +171,9 @@ export function HomeScreen() {
       <div className="fixed-bottom">
         <button
           className="btn btn-primary btn-block btn-lg"
-          onClick={() => navigate({ name: "add" })}
+          onClick={() => navigate({ name: "add", kind })}
         >
-          기록 추가하기
+          {isExpense ? "고정지출 추가하기" : "경조사비 추가하기"}
         </button>
       </div>
     </div>

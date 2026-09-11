@@ -69,9 +69,9 @@ export function SettingsScreen({ onToast }: Props) {
         <div className="card">
           <div className="setting-row">
             <div className="setting-text">
-              <div className="st-title">경조사 알림 받기</div>
+              <div className="st-title">결제일·경조사 알림 받기</div>
               <div className="st-sub">
-                경조사 하루 전, 월말 요약을 알려드려요
+                결제일과 경조사 하루 전, 월말 요약을 알려드려요
               </div>
             </div>
             <button

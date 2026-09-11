@@ -1,57 +1,73 @@
 // 엑셀(.xlsx) / PDF 내보내기 유틸.
-// 컬럼: 날짜 / 이름 / 관계 / 종류 / 방향 / 금액  (사업자 경비처리용 양식 고려)
+// 탭(kind)에 따라 컬럼이 달라져요.
+//  - 고정지출: 시작일 / 항목 / 결제방법 / 결제일 / 구분(지출·저축투자) / 금액
+//  - 경조사비: 날짜 / 이름 / 사유 / 구분(받음·냄) / 금액
 
 import * as XLSX from "xlsx";
-import type { Record } from "../types";
-import {
-  DIRECTION_LABEL,
-  EVENT_LABEL,
-  RELATION_LABEL,
-} from "../types";
+import type { Kind, Record } from "../types";
+import { KIND_LABEL, PAY_METHOD_LABEL } from "../types";
 import { formatDate, formatMoney } from "../utils";
 
-/** 기간(inclusive)으로 기록 필터 + 날짜 오름차순 정렬 */
+/** 기간(inclusive) + 종류(kind)로 기록 필터 + 날짜 오름차순 정렬 */
 export function filterByPeriod(
   records: Record[],
+  kind: Kind,
   fromISO: string,
   toISO: string,
 ): Record[] {
   return records
-    .filter((r) => r.date >= fromISO && r.date <= toISO)
+    .filter((r) => r.kind === kind && r.date >= fromISO && r.date <= toISO)
     .sort((a, b) => a.date.localeCompare(b.date));
 }
 
 interface Summary {
-  received: number;
-  given: number;
-  net: number;
+  inn: number; // 들어오는 돈(저축·투자 / 받음)
+  out: number; // 나가는 돈(지출 / 냄)
+  net: number; // inn - out
   count: number;
 }
 
 export function summarize(records: Record[]): Summary {
-  let received = 0;
-  let given = 0;
+  let inn = 0;
+  let out = 0;
   for (const r of records) {
-    if (r.direction === "received") received += r.amount;
-    else given += r.amount;
+    if (r.flow === "in") inn += r.amount;
+    else out += r.amount;
   }
-  return { received, given, net: received - given, count: records.length };
+  return { inn, out, net: inn - out, count: records.length };
 }
 
-function rowsFor(records: Record[]): (string | number)[][] {
-  return records.map((r) => [
-    r.date,
-    r.name,
-    RELATION_LABEL[r.relation],
-    EVENT_LABEL[r.eventType],
-    DIRECTION_LABEL[r.direction],
-    r.amount,
-  ]);
+function flowText(kind: Kind, r: Record): string {
+  if (kind === "expense") return r.flow === "in" ? "저축·투자" : "지출";
+  return r.flow === "in" ? "받음" : "냄";
+}
+
+/** 엑셀 헤더 (탭별) */
+function headerFor(kind: Kind): string[] {
+  return kind === "expense"
+    ? ["시작일", "항목", "결제방법", "결제일", "구분", "금액(원)"]
+    : ["날짜", "이름", "사유", "구분", "금액(원)"];
+}
+
+/** 엑셀 데이터 행 (탭별) */
+function rowsFor(kind: Kind, records: Record[]): (string | number)[][] {
+  return records.map((r) => {
+    if (r.kind === "expense") {
+      return [
+        r.date,
+        r.name,
+        PAY_METHOD_LABEL[r.payMethod],
+        `매달 ${r.payDay}일`,
+        flowText(kind, r),
+        r.amount,
+      ];
+    }
+    return [r.date, r.name, r.reason, flowText(kind, r), r.amount];
+  });
 }
 
 /**
  * Blob을 파일로 다운로드해요. (토스 웹뷰/모바일 브라우저 호환)
- * <a download> 앵커를 만들어 클릭 → 즉시 정리.
  */
 function downloadBlob(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
@@ -62,7 +78,6 @@ function downloadBlob(blob: Blob, filename: string): void {
   a.style.display = "none";
   document.body.appendChild(a);
   a.click();
-  // 약간의 지연 후 정리 (일부 웹뷰에서 즉시 revoke 시 실패)
   setTimeout(() => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
@@ -71,42 +86,41 @@ function downloadBlob(blob: Blob, filename: string): void {
 
 /** 엑셀 파일 다운로드 */
 export function exportExcel(
+  kind: Kind,
   records: Record[],
   fromISO: string,
   toISO: string,
 ): void {
-  const header = ["날짜", "이름", "관계", "종류", "방향", "금액(원)"];
+  const header = headerFor(kind);
   const s = summarize(records);
+  const label = KIND_LABEL[kind];
+
+  const inLabel = kind === "expense" ? "저축·투자 합계" : "받은 돈 합계";
+  const outLabel = kind === "expense" ? "지출 합계" : "낸 돈 합계";
 
   const aoa: (string | number)[][] = [
-    ["경조사비 메모장 - 내역"],
+    [`머니메모 - ${label} 내역`],
     [`기간: ${fromISO} ~ ${toISO}`],
-    [
-      `받은 돈 합계: ${s.received}원  /  낸 돈 합계: ${s.given}원  /  순액: ${s.net}원`,
-    ],
+    [`${outLabel}: ${s.out}원  /  ${inLabel}: ${s.inn}원  /  순액: ${s.net}원`],
     [],
     header,
-    ...rowsFor(records),
+    ...rowsFor(kind, records),
   ];
 
   const ws = XLSX.utils.aoa_to_sheet(aoa);
-  ws["!cols"] = [
-    { wch: 12 },
-    { wch: 12 },
-    { wch: 8 },
-    { wch: 8 },
-    { wch: 7 },
-    { wch: 12 },
-  ];
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "경조사비");
+  ws["!cols"] =
+    kind === "expense"
+      ? [{ wch: 12 }, { wch: 14 }, { wch: 9 }, { wch: 9 }, { wch: 9 }, { wch: 12 }]
+      : [{ wch: 12 }, { wch: 12 }, { wch: 10 }, { wch: 7 }, { wch: 12 }];
 
-  // writeFile 대신 바이너리 → Blob → 앵커 다운로드 (웹뷰 호환)
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, label);
+
   const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
   const blob = new Blob([wbout], {
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   });
-  downloadBlob(blob, `경조사비_${fromISO}_${toISO}.xlsx`);
+  downloadBlob(blob, `머니메모_${label}_${fromISO}_${toISO}.xlsx`);
 }
 
 /**
@@ -115,28 +129,49 @@ export function exportExcel(
  * iframe 인쇄가 불가능한 환경에서는 HTML 파일 다운로드로 폴백해요.
  */
 export function exportPDF(
+  kind: Kind,
   records: Record[],
   fromISO: string,
   toISO: string,
 ): boolean {
   const s = summarize(records);
+  const label = KIND_LABEL[kind];
+  const isExpense = kind === "expense";
+
+  const headCells = isExpense
+    ? `<th>시작일</th><th>항목</th><th>결제방법</th><th>결제일</th><th>구분</th><th class="num">금액</th>`
+    : `<th>날짜</th><th>이름</th><th>사유</th><th>구분</th><th class="num">금액</th>`;
+
   const rows = records
-    .map(
-      (r) => `
-      <tr>
+    .map((r) => {
+      const sign = r.flow === "in" ? "+" : "-";
+      const amtCell = `<td class="num">${sign}${formatMoney(r.amount)}</td>`;
+      if (r.kind === "expense") {
+        return `<tr>
+          <td>${formatDate(r.date)}</td>
+          <td>${escapeHtml(r.name)}</td>
+          <td>${PAY_METHOD_LABEL[r.payMethod]}</td>
+          <td>매달 ${r.payDay}일</td>
+          <td>${flowText(kind, r)}</td>
+          ${amtCell}
+        </tr>`;
+      }
+      return `<tr>
         <td>${formatDate(r.date)}</td>
         <td>${escapeHtml(r.name)}</td>
-        <td>${RELATION_LABEL[r.relation]}</td>
-        <td>${EVENT_LABEL[r.eventType]}</td>
-        <td>${DIRECTION_LABEL[r.direction]}</td>
-        <td class="num">${r.direction === "given" ? "-" : "+"}${formatMoney(r.amount)}</td>
-      </tr>`,
-    )
+        <td>${escapeHtml(r.reason)}</td>
+        <td>${flowText(kind, r)}</td>
+        ${amtCell}
+      </tr>`;
+    })
     .join("");
+
+  const inLabel = isExpense ? "저축·투자" : "받은 돈";
+  const outLabel = isExpense ? "지출" : "낸 돈";
 
   const html = `<!doctype html>
 <html lang="ko"><head><meta charset="utf-8" />
-<title>경조사비 내역 ${fromISO}~${toISO}</title>
+<title>머니메모 ${label} ${fromISO}~${toISO}</title>
 <style>
   * { font-family: -apple-system, "Malgun Gothic", sans-serif; }
   body { padding: 28px; color: #191f28; }
@@ -151,17 +186,15 @@ export function exportPDF(
   @media print { body { padding: 0; } }
 </style></head>
 <body>
-  <h1>경조사비 메모장 · 내역</h1>
+  <h1>머니메모 · ${label} 내역</h1>
   <div class="period">기간: ${fromISO} ~ ${toISO} · 총 ${s.count}건</div>
   <div class="summary">
-    <div>받은 돈 <b>${formatMoney(s.received)}원</b></div>
-    <div>낸 돈 <b>${formatMoney(s.given)}원</b></div>
+    <div>${outLabel} <b>${formatMoney(s.out)}원</b></div>
+    <div>${inLabel} <b>${formatMoney(s.inn)}원</b></div>
     <div>순액 <b>${s.net >= 0 ? "+" : ""}${formatMoney(s.net)}원</b></div>
   </div>
   <table>
-    <thead><tr>
-      <th>날짜</th><th>이름</th><th>관계</th><th>종류</th><th>방향</th><th class="num">금액</th>
-    </tr></thead>
+    <thead><tr>${headCells}</tr></thead>
     <tbody>${rows}</tbody>
   </table>
 </body></html>`;
@@ -192,23 +225,19 @@ export function exportPDF(
         iframe.contentWindow?.focus();
         iframe.contentWindow?.print();
       } catch {
-        /* 인쇄 실패는 아래 setTimeout 정리에서 폴백 없이 무시 */
+        /* noop */
       }
-      // 인쇄 다이얼로그가 뜬 뒤 iframe 정리
       setTimeout(() => {
         if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
       }, 2000);
     };
 
-    // 로드 완료 후 인쇄 (약간의 지연으로 폰트/렌더 안정화)
     iframe.onload = () => setTimeout(doPrint, 300);
-    // 일부 웹뷰는 onload가 늦게/안 올 수 있어 안전망 타이머도 둠
     setTimeout(doPrint, 800);
     return true;
   } catch {
-    // 2순위 폴백: HTML 파일로 다운로드 (사용자가 브라우저에서 열어 인쇄/PDF 저장)
     const blob = new Blob([html], { type: "text/html;charset=utf-8" });
-    downloadBlob(blob, `경조사비_${fromISO}_${toISO}.html`);
+    downloadBlob(blob, `머니메모_${label}_${fromISO}_${toISO}.html`);
     return true;
   }
 }

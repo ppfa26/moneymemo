@@ -5,7 +5,7 @@ import { AD_GROUP_IDS } from "../ads/adConfig";
 import { showInterstitial } from "../ads/fullScreenAd";
 import {
   decideInterstitial,
-  getLastViewedEventType,
+  getLastViewedSensitive,
   hasViewedDetail,
   incrementSessionCount,
   resetDetailViewed,
@@ -33,7 +33,7 @@ export function BottomNav({ current }: Props) {
         now: Date.now(),
         firstLaunchAt: meta.firstLaunchAt,
         lastInterstitialAt: meta.lastInterstitialAt,
-        eventType: getLastViewedEventType(),
+        sensitive: getLastViewedSensitive(),
       });
       resetDetailViewed();
       if (decision.allow) {

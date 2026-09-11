@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
 import { loadRecords } from "../storage";
+import type { Kind } from "../types";
+import { KIND_LABEL } from "../types";
 import { currentYear, currentYearMonth, formatMoney, todayISO } from "../utils";
 import {
   exportExcel,
@@ -14,10 +16,12 @@ type Format = "excel" | "pdf";
 type Preset = "thisMonth" | "thisYear" | "all" | "custom";
 
 interface Props {
+  kind: Kind;
+  onKindChange: (k: Kind) => void;
   onToast: (msg: string) => void;
 }
 
-export function ExportScreen({ onToast }: Props) {
+export function ExportScreen({ kind, onKindChange, onToast }: Props) {
   const all = useMemo(() => loadRecords(), []);
   const [preset, setPreset] = useState<Preset>("thisYear");
   const [from, setFrom] = useState(currentYear() + "-01-01");
@@ -39,10 +43,11 @@ export function ExportScreen({ onToast }: Props) {
   }, [preset, from, to]);
 
   const records = useMemo(
-    () => filterByPeriod(all, fromISO, toISO),
-    [all, fromISO, toISO],
+    () => filterByPeriod(all, kind, fromISO, toISO),
+    [all, kind, fromISO, toISO],
   );
   const s = summarize(records);
+  const isExpense = kind === "expense";
 
   async function handleDownload(format: Format) {
     if (busyFormat) return;
@@ -58,10 +63,10 @@ export function ExportScreen({ onToast }: Props) {
 
     try {
       if (format === "excel") {
-        exportExcel(records, fromISO, toISO);
+        exportExcel(kind, records, fromISO, toISO);
         onToast("엑셀 파일을 저장했어요 📊");
       } else {
-        exportPDF(records, fromISO, toISO);
+        exportPDF(kind, records, fromISO, toISO);
         onToast("PDF를 만들었어요 📄 (인쇄 → PDF로 저장)");
       }
     } catch {
@@ -80,6 +85,9 @@ export function ExportScreen({ onToast }: Props) {
           ? "전체 기간"
           : "선택한 기간";
 
+  const outLabel = isExpense ? "지출" : "낸 돈";
+  const inLabel = isExpense ? "저축·투자" : "받은 돈";
+
   return (
     <div className="page">
       <div className="page-header">
@@ -88,6 +96,20 @@ export function ExportScreen({ onToast }: Props) {
       </div>
 
       <div className="page-body">
+        {/* 고정지출 / 경조사비 탭 전환 */}
+        <div className="kind-tabs">
+          {(["expense", "gift"] as Kind[]).map((k) => (
+            <button
+              key={k}
+              className={`kind-tab ${kind === k ? "active" : ""}`}
+              onClick={() => onKindChange(k)}
+            >
+              {k === "expense" ? "💳 " : "🎁 "}
+              {KIND_LABEL[k]}
+            </button>
+          ))}
+        </div>
+
         {/* 기간 선택 */}
         <div className="field">
           <label>어떤 기간을 저장할까요?</label>
@@ -135,17 +157,19 @@ export function ExportScreen({ onToast }: Props) {
         {/* 미리보기 요약 */}
         <div className="export-preview">
           <div className="export-preview-top">
-            <span className="badge">{periodLabel}</span>
+            <span className="badge">
+              {KIND_LABEL[kind]} · {periodLabel}
+            </span>
             <span className="count">{s.count}건</span>
           </div>
           <div className="export-preview-nums">
             <div>
-              <div className="k">받은 돈</div>
-              <div className="v received">{formatMoney(s.received)}원</div>
+              <div className="k">{outLabel}</div>
+              <div className="v given">{formatMoney(s.out)}원</div>
             </div>
             <div>
-              <div className="k">낸 돈</div>
-              <div className="v given">{formatMoney(s.given)}원</div>
+              <div className="k">{inLabel}</div>
+              <div className="v received">{formatMoney(s.inn)}원</div>
             </div>
             <div>
               <div className="k">순액</div>

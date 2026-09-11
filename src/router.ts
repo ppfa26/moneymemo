@@ -6,10 +6,11 @@
 //   화면 상태를 되돌리면 돼요 (시스템 back 핸들링).
 
 import { useEffect, useState } from "react";
+import type { Kind } from "./types";
 
 export type Route =
   | { name: "home" }
-  | { name: "add" }
+  | { name: "add"; kind: Kind }
   | { name: "edit"; id: string }
   | { name: "detail"; id: string }
   | { name: "export" }
@@ -57,7 +58,7 @@ export function initRoute(): void {
     const screen = new URLSearchParams(window.location.search).get("screen");
     if (screen === "export") initial = { name: "export" };
     else if (screen === "settings") initial = { name: "settings" };
-    else if (screen === "add") initial = { name: "add" };
+    else if (screen === "add") initial = { name: "add", kind: "expense" };
   } catch {
     /* noop */
   }

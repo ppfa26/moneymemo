@@ -1,12 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { goBack, navigate } from "../router";
 import { deleteRecord, getRecord } from "../storage";
-import {
-  DIRECTION_LABEL,
-  EVENT_EMOJI,
-  EVENT_LABEL,
-  RELATION_LABEL,
-} from "../types";
+import { KIND_LABEL, PAY_METHOD_LABEL } from "../types";
 import { formatDate, formatMoney } from "../utils";
 import { markDetailViewed } from "../ads/interstitialPolicy";
 
@@ -21,8 +16,13 @@ export function DetailScreen({ id, onToast }: Props) {
   const [zoomPhoto, setZoomPhoto] = useState<string | null>(null);
 
   // 상세를 본 것 = 콘텐츠 소비. 홈 복귀 시 전면광고 노출 판단에 사용해요.
+  // 장례(부조금) 사유면 민감 맥락으로 표시해 광고를 스킵해요.
   useEffect(() => {
-    if (record) markDetailViewed(record.eventType);
+    if (record) {
+      const sensitive =
+        record.kind === "gift" && record.reason.includes("장례");
+      markDetailViewed(sensitive);
+    }
   }, [record]);
 
   if (!record) {
@@ -48,6 +48,24 @@ export function DetailScreen({ id, onToast }: Props) {
     );
   }
 
+  const isExpense = record.kind === "expense";
+  const emoji = isExpense
+    ? record.flow === "in"
+      ? "💰"
+      : "💳"
+    : record.flow === "in"
+      ? "🎁"
+      : "💸";
+  const flowText = isExpense
+    ? record.flow === "in"
+      ? "저축·투자"
+      : "지출"
+    : record.flow === "in"
+      ? "받았어요"
+      : "냈어요";
+  const sign = record.flow === "in" ? "+" : "-";
+  const amtClass = record.flow === "in" ? "received" : "given";
+
   function handleDelete() {
     deleteRecord(record!.id);
     onToast("삭제되었어요");
@@ -58,22 +76,19 @@ export function DetailScreen({ id, onToast }: Props) {
     <div className="page">
       <div className="page-header">
         <h1>
-          {EVENT_EMOJI[record.eventType]} {record.name}
+          {emoji} {record.name}
         </h1>
         <div className="sub">
-          {DIRECTION_LABEL[record.direction]} ·{" "}
-          {EVENT_LABEL[record.eventType]}
+          {KIND_LABEL[record.kind]} · {flowText}
         </div>
       </div>
 
       <div className="page-body">
         {/* 금액 강조 */}
         <div className="card detail-hero">
-          <div className="dh-dir">
-            {record.direction === "received" ? "받았어요" : "냈어요"}
-          </div>
-          <div className={`dh-amt amt ${record.direction}`}>
-            {record.direction === "given" ? "-" : "+"}
+          <div className="dh-dir">{flowText}</div>
+          <div className={`dh-amt amt ${amtClass}`}>
+            {sign}
             {formatMoney(record.amount)}원
           </div>
         </div>
@@ -81,21 +96,36 @@ export function DetailScreen({ id, onToast }: Props) {
         {/* 정보 */}
         <div className="card">
           <div className="info-row">
-            <span className="k">이름</span>
+            <span className="k">{isExpense ? "항목" : "이름"}</span>
             <span className="v">{record.name}</span>
           </div>
-          <div className="info-row">
-            <span className="k">관계</span>
-            <span className="v">{RELATION_LABEL[record.relation]}</span>
-          </div>
-          <div className="info-row">
-            <span className="k">종류</span>
-            <span className="v">{EVENT_LABEL[record.eventType]}</span>
-          </div>
-          <div className="info-row">
-            <span className="k">날짜</span>
-            <span className="v">{formatDate(record.date)}</span>
-          </div>
+          {record.kind === "expense" ? (
+            <>
+              <div className="info-row">
+                <span className="k">결제방법</span>
+                <span className="v">{PAY_METHOD_LABEL[record.payMethod]}</span>
+              </div>
+              <div className="info-row">
+                <span className="k">결제일</span>
+                <span className="v">매달 {record.payDay}일</span>
+              </div>
+              <div className="info-row">
+                <span className="k">시작일</span>
+                <span className="v">{formatDate(record.date)}</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="info-row">
+                <span className="k">사유</span>
+                <span className="v">{record.reason}</span>
+              </div>
+              <div className="info-row">
+                <span className="k">날짜</span>
+                <span className="v">{formatDate(record.date)}</span>
+              </div>
+            </>
+          )}
           {record.memo && (
             <div className="info-row">
               <span className="k">메모</span>
