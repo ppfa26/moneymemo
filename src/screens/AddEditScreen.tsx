@@ -113,14 +113,14 @@ export function AddEditScreen({ editId, onToast }: Props) {
   return (
     <div className="page">
       <div className="page-header">
-        <h1>{isEdit ? "기록 수정" : "새 기록"}</h1>
-        <div className="sub">누구에게 · 언제 · 얼마</div>
+        <h1>{isEdit ? "기록 수정" : "새 기록 추가"}</h1>
+        <div className="sub">누구와 · 언제 · 얼마를 남겨요</div>
       </div>
 
       <div className="page-body">
         {/* 방향 토글 */}
         <div className="field">
-          <label>방향</label>
+          <label>받았나요, 냈나요?</label>
           <div className="segment two">
             {(["received", "given"] as Direction[]).map((d) => (
               <button
@@ -137,10 +137,10 @@ export function AddEditScreen({ editId, onToast }: Props) {
 
         {/* 이름 */}
         <div className="field">
-          <label>이름</label>
+          <label>누구인가요?</label>
           <input
             className="text-input"
-            placeholder="예: 김철수"
+            placeholder="이름을 입력해요 (예: 김철수)"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -148,7 +148,7 @@ export function AddEditScreen({ editId, onToast }: Props) {
 
         {/* 관계 */}
         <div className="field">
-          <label>관계</label>
+          <label>어떤 사이예요?</label>
           <div className="segment">
             {RELATIONS.map((r) => (
               <button
@@ -164,7 +164,7 @@ export function AddEditScreen({ editId, onToast }: Props) {
 
         {/* 경조사 종류 */}
         <div className="field">
-          <label>경조사 종류</label>
+          <label>무슨 경조사예요?</label>
           <div className="segment">
             {EVENTS.map((e) => (
               <button
@@ -180,7 +180,7 @@ export function AddEditScreen({ editId, onToast }: Props) {
 
         {/* 금액 */}
         <div className="field">
-          <label>금액</label>
+          <label>얼마인가요?</label>
           <div className="amount-input">
             <input
               inputMode="numeric"
@@ -208,7 +208,7 @@ export function AddEditScreen({ editId, onToast }: Props) {
 
         {/* 날짜 */}
         <div className="field">
-          <label>날짜</label>
+          <label>언제였나요?</label>
           <input
             type="date"
             className="text-input"
@@ -219,7 +219,7 @@ export function AddEditScreen({ editId, onToast }: Props) {
 
         {/* 사진 첨부 */}
         <div className="field">
-          <label>사진 (청첩장 · 부고장 · 이체내역)</label>
+          <label>사진을 남겨둘까요? (선택)</label>
           <PhotoAttach photos={photos} onChange={setPhotos} onToast={onToast} />
         </div>
 
@@ -228,7 +228,7 @@ export function AddEditScreen({ editId, onToast }: Props) {
           <label>메모 (선택)</label>
           <textarea
             className="text-input"
-            placeholder="예: 결혼식 축의금"
+            placeholder="기억해두고 싶은 내용을 적어요"
             value={memo}
             onChange={(e) => setMemo(e.target.value)}
           />
@@ -241,7 +241,7 @@ export function AddEditScreen({ editId, onToast }: Props) {
           disabled={!canSave || saving}
           onClick={handleSave}
         >
-          {saving ? "저장 중…" : isEdit ? "수정 완료" : "저장하기"}
+          {saving ? "저장하고 있어요…" : isEdit ? "수정 완료" : "저장하기"}
         </button>
       </div>
     </div>

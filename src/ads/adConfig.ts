@@ -19,6 +19,4 @@ export const AD_POLICY = {
   NEW_USER_GRACE_MS: 24 * 60 * 60 * 1000, // 24시간
   /** 전면광고 최소 쿨타임 (ms) */
   INTERSTITIAL_COOLDOWN_MS: 5 * 60 * 1000, // 5분
-  /** 월 무료 내보내기 횟수 (초과분만 리워드 잠금) */
-  FREE_EXPORT_PER_MONTH: 2,
 } as const;

@@ -111,8 +111,8 @@ export function PhotoAttach({ photos, onChange, onToast }: Props) {
               {busy
                 ? "잠깐만요…"
                 : needUnlock
-                  ? "광고 보고\n추가"
-                  : "사진 추가"}
+                  ? "광고 보고\n더 담기"
+                  : "사진 담기"}
             </span>
           </button>
         )}
@@ -136,8 +136,8 @@ export function PhotoAttach({ photos, onChange, onToast }: Props) {
             lineHeight: 1.5,
           }}
         >
-          기본 3장은 무료예요. 4장째부터는 짧은 광고를 보면 오늘 하루 더
-          첨부할 수 있어요.
+          사진은 3장까지 그냥 담을 수 있어요. 더 담고 싶다면 짧은 광고만
+          보면 돼요 🙂
         </p>
       )}
     </div>

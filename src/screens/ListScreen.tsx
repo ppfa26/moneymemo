@@ -139,7 +139,7 @@ export function ListScreen() {
         {shown.length === 0 ? (
           <div className="card empty" style={{ marginTop: 16 }}>
             <div className="emoji">🔍</div>
-            <div className="msg">조건에 맞는 기록이 없어요.</div>
+            <div className="msg">찾는 기록이 없어요.</div>
           </div>
         ) : (
           <div className="card" style={{ marginTop: 14 }}>

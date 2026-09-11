@@ -8,6 +8,7 @@ import { AdBanner } from "../components/AdBanner";
 export function HomeScreen() {
   const records = useMemo(() => loadRecords(), []);
   const ym = currentYearMonth();
+  const month = Number(ym.slice(5));
 
   const { received, given } = useMemo(() => {
     let received = 0;
@@ -31,28 +32,24 @@ export function HomeScreen() {
       </div>
 
       <div className="page-body">
-        {/* 이번 달 요약 카드 */}
+        {/* 이번 달 요약 - 순액 크게 강조 */}
         <div className="summary">
-          <div className="summary-title">
-            이번 달 ({Number(ym.slice(5))}월) 경조사비
+          <div className="summary-title">{month}월 한눈에 보기</div>
+          <div className="summary-net">
+            <div className="net-label">이번 달 순액</div>
+            <div className="net-value">
+              {net >= 0 ? "+" : ""}
+              {formatMoney(net)}원
+            </div>
           </div>
           <div className="summary-row">
             <div className="summary-item">
-              <div className="label">받은 돈</div>
+              <div className="label">받았어요</div>
               <div className="value received">{formatMoney(received)}원</div>
             </div>
-            <div className="summary-divider" />
             <div className="summary-item">
-              <div className="label">낸 돈</div>
+              <div className="label">냈어요</div>
               <div className="value given">{formatMoney(given)}원</div>
-            </div>
-            <div className="summary-divider" />
-            <div className="summary-item">
-              <div className="label">순액</div>
-              <div className="value net">
-                {net >= 0 ? "+" : ""}
-                {formatMoney(net)}원
-              </div>
             </div>
           </div>
         </div>
@@ -62,7 +59,7 @@ export function HomeScreen() {
           <h2>최근 기록</h2>
           {records.length > 0 && (
             <button className="more" onClick={() => navigate({ name: "list" })}>
-              전체보기
+              전체 보기
             </button>
           )}
         </div>
@@ -73,7 +70,7 @@ export function HomeScreen() {
             <div className="msg">
               아직 기록이 없어요.
               <br />
-              첫 경조사비를 기록해 보세요!
+              아래 버튼으로 첫 기록을 남겨볼까요?
             </div>
           </div>
         ) : (
@@ -98,7 +95,7 @@ export function HomeScreen() {
           className="btn btn-primary btn-block btn-lg"
           onClick={() => navigate({ name: "add" })}
         >
-          + 새 기록 추가
+          기록 추가하기
         </button>
       </div>
     </div>

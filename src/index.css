@@ -41,7 +41,7 @@ body,
 }
 
 body {
-  background: var(--bg);
+  background: #fff;
   overscroll-behavior-y: none;
 }
 

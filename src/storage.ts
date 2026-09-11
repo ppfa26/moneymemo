@@ -12,8 +12,6 @@ interface AppMeta {
   firstLaunchAt: number;
   /** 마지막 전면광고 노출 시각 (epoch ms) - 쿨타임 계산용 */
   lastInterstitialAt: number;
-  /** 이번 달 무료 다운로드 사용 횟수 { "2026-10": 1 } */
-  freeExportUsage: { [ym: string]: number };
 }
 
 function safeParse<T>(raw: string | null, fallback: T): T {
@@ -65,7 +63,6 @@ export function loadMeta(): AppMeta {
   const normalized: AppMeta = {
     firstLaunchAt: meta.firstLaunchAt ?? now,
     lastInterstitialAt: meta.lastInterstitialAt ?? 0,
-    freeExportUsage: meta.freeExportUsage ?? {},
   };
   // 최초 실행 시각이 없었으면 지금 기록
   if (meta.firstLaunchAt == null) {
@@ -81,17 +78,6 @@ export function saveMeta(meta: AppMeta): void {
 export function markInterstitialShown(): void {
   const meta = loadMeta();
   meta.lastInterstitialAt = Date.now();
-  saveMeta(meta);
-}
-
-/** 이번 달 무료 내보내기 사용 횟수 */
-export function getFreeExportUsage(ym: string): number {
-  return loadMeta().freeExportUsage[ym] ?? 0;
-}
-
-export function incrementFreeExportUsage(ym: string): void {
-  const meta = loadMeta();
-  meta.freeExportUsage[ym] = (meta.freeExportUsage[ym] ?? 0) + 1;
   saveMeta(meta);
 }
 

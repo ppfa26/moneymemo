@@ -62,14 +62,11 @@ export function DetailScreen({ id, onToast }: Props) {
 
       <div className="page-body">
         {/* 금액 강조 */}
-        <div className="card" style={{ textAlign: "center", padding: "26px 18px" }}>
-          <div style={{ fontSize: 13, color: "var(--text-sub)", marginBottom: 8 }}>
-            {DIRECTION_LABEL[record.direction]}
+        <div className="card detail-hero">
+          <div className="dh-dir">
+            {record.direction === "received" ? "받았어요" : "냈어요"}
           </div>
-          <div
-            className={`amt ${record.direction}`}
-            style={{ fontSize: 34, fontWeight: 800 }}
-          >
+          <div className={`dh-amt amt ${record.direction}`}>
             {record.direction === "given" ? "-" : "+"}
             {formatMoney(record.amount)}원
           </div>
@@ -132,7 +129,7 @@ export function DetailScreen({ id, onToast }: Props) {
               취소
             </button>
             <button className="btn btn-danger" onClick={handleDelete}>
-              정말 삭제
+              네, 삭제할게요
             </button>
           </div>
         ) : (

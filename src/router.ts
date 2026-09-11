@@ -47,9 +47,18 @@ export function useRoute(): Route {
   return route;
 }
 
-/** 앱 시작 시 최초 라우트를 home으로 세팅 (history 진입점 보장) */
+/** 앱 시작 시 최초 라우트 세팅 (history 진입점 보장)
+ *  ?screen=list|export 같은 쿼리로 진입하면 해당 화면에서 시작해요(딥링크). */
 export function initRoute(): void {
-  if (window.history.state == null) {
-    window.history.replaceState({ name: "home" } as Route, "", "");
+  if (window.history.state != null) return;
+
+  let initial: Route = { name: "home" };
+  try {
+    const screen = new URLSearchParams(window.location.search).get("screen");
+    if (screen === "list") initial = { name: "list" };
+    else if (screen === "export") initial = { name: "export" };
+  } catch {
+    /* noop */
   }
+  window.history.replaceState(initial, "", "");
 }
