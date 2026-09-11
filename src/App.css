@@ -70,16 +70,16 @@
   margin-top: 14px;
 }
 
-/* ===== 요약 대시보드 (홈 히어로) ===== */
+/* ===== 요약 대시보드 (홈 히어로) - 오렌지 그라데이션 ===== */
 .summary {
-  background: var(--navy);
+  background: linear-gradient(135deg, #ff8a2b 0%, var(--orange) 55%, var(--red-orange) 120%);
   border-radius: 24px;
   padding: 24px 22px;
-  color: #fff;
+  color: var(--on-accent);
 }
 .summary .summary-title {
   font-size: 14px;
-  color: #9aa4b2;
+  color: var(--on-accent-sub);
   margin-bottom: 18px;
   letter-spacing: -0.3px;
 }
@@ -88,7 +88,7 @@
 }
 .summary-net .net-label {
   font-size: 13px;
-  color: #9aa4b2;
+  color: var(--on-accent-sub);
   margin-bottom: 6px;
 }
 .summary-net .net-value {
@@ -99,7 +99,7 @@
 .summary-row {
   display: flex;
   gap: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
   padding-top: 16px;
 }
 .summary-item {
@@ -107,19 +107,20 @@
 }
 .summary-item .label {
   font-size: 12px;
-  color: #9aa4b2;
+  color: var(--on-accent-sub);
   margin-bottom: 5px;
 }
 .summary-item .value {
   font-size: 17px;
   font-weight: 800;
   letter-spacing: -0.4px;
+  color: #fff;
 }
 .summary-item .value.received {
-  color: #5be08c;
+  color: #fff;
 }
 .summary-item .value.given {
-  color: #ff9575;
+  color: #ffe0b8;
 }
 
 /* ===== 버튼 (토스식: 크고 둥글게) ===== */
@@ -606,12 +607,12 @@ textarea.text-input {
   flex: 1;
 }
 
-/* ===== 내보내기: 미리보기 카드 ===== */
+/* ===== 내보내기: 미리보기 카드 - 오렌지 그라데이션 ===== */
 .export-preview {
-  background: var(--navy);
+  background: linear-gradient(135deg, #ff8a2b 0%, var(--orange) 55%, var(--red-orange) 120%);
   border-radius: 20px;
   padding: 20px;
-  color: #fff;
+  color: var(--on-accent);
   margin-bottom: 20px;
 }
 .export-preview-top {
@@ -621,7 +622,7 @@ textarea.text-input {
   margin-bottom: 18px;
 }
 .export-preview-top .badge {
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.24);
   padding: 6px 12px;
   border-radius: 999px;
   font-size: 13px;
@@ -629,7 +630,7 @@ textarea.text-input {
 }
 .export-preview-top .count {
   font-size: 14px;
-  color: #9aa4b2;
+  color: var(--on-accent-sub);
   font-weight: 600;
 }
 .export-preview-nums {
@@ -641,19 +642,20 @@ textarea.text-input {
 }
 .export-preview-nums .k {
   font-size: 12px;
-  color: #9aa4b2;
+  color: var(--on-accent-sub);
   margin-bottom: 6px;
 }
 .export-preview-nums .v {
   font-size: 16px;
   font-weight: 800;
   letter-spacing: -0.4px;
+  color: #fff;
 }
 .export-preview-nums .v.received {
-  color: #5be08c;
+  color: #fff;
 }
 .export-preview-nums .v.given {
-  color: #ff9575;
+  color: #ffe0b8;
 }
 
 /* ===== 내보내기: 원탭 다운로드 카드 ===== */

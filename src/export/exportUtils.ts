@@ -113,10 +113,10 @@ export function exportPDF(
 <style>
   * { font-family: -apple-system, "Malgun Gothic", sans-serif; }
   body { padding: 28px; color: #191f28; }
-  h1 { font-size: 20px; color: #141a28; margin-bottom: 4px; }
+  h1 { font-size: 20px; color: #ff6f0f; margin-bottom: 4px; }
   .period { color: #6b7684; font-size: 13px; margin-bottom: 16px; }
   .summary { display: flex; gap: 20px; margin-bottom: 18px; font-size: 13px; }
-  .summary b { color: #141a28; }
+  .summary b { color: #191f28; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th, td { border-bottom: 1px solid #e8ebee; padding: 9px 6px; text-align: left; }
   th { background: #f2f4f6; color: #6b7684; font-weight: 700; }
