@@ -148,18 +148,11 @@ export function HomeScreen({ kind, onKindChange }: Props) {
           </div>
         </div>
 
-        {/* 섹션 타이틀 자리에 배너 광고 (요약 카드와 목록 사이) */}
+        {/* 섹션 타이틀/빈 문구 자리에 배너 광고 (요약 카드와 목록 사이) */}
         <AdBanner />
 
         <div className="home-list">
-          {filtered.length === 0 ? (
-            <div className="empty">
-              <div className="emoji">{isExpense ? "💳" : "📝"}</div>
-              <div className="msg">이 기간엔 기록이 없어요</div>
-            </div>
-          ) : (
-            <RecordList records={filtered} />
-          )}
+          {filtered.length > 0 && <RecordList records={filtered} />}
         </div>
       </div>
 

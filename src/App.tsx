@@ -1,10 +1,17 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 import { initRoute, useRoute } from "./router";
 import { useSafeArea } from "./hooks/useSafeArea";
-import { loadMeta } from "./storage";
+import { loadMeta, markInterstitialShown } from "./storage";
+import { AD_GROUP_IDS } from "./ads/adConfig";
+import { showInterstitial } from "./ads/fullScreenAd";
+import {
+  decideLaunchInterstitial,
+  markLaunchInterstitialShown,
+} from "./ads/interstitialPolicy";
 import type { Kind } from "./types";
 import { HomeScreen } from "./screens/HomeScreen";
+import { ListScreen } from "./screens/ListScreen";
 import { AddEditScreen } from "./screens/AddEditScreen";
 import { DetailScreen } from "./screens/DetailScreen";
 import { ExportScreen } from "./screens/ExportScreen";
@@ -26,13 +33,37 @@ export default function App() {
 
   const showToast = useCallback((msg: string) => setToast(msg), []);
 
+  // ★ 전면광고: 미니앱 실행 시 딱 1회만 (30분 쿨타임 + 가입 24h 유예).
+  //   앱 사용 중에는 절대 안 띄워요. 광고 실패해도 앱은 그대로 사용 가능.
+  const launchAdTried = useRef(false);
+  useEffect(() => {
+    if (launchAdTried.current) return;
+    launchAdTried.current = true;
+
+    const meta = loadMeta();
+    const decision = decideLaunchInterstitial({
+      now: Date.now(),
+      firstLaunchAt: meta.firstLaunchAt,
+      lastInterstitialAt: meta.lastInterstitialAt,
+    });
+    if (decision.allow) {
+      markLaunchInterstitialShown();
+      markInterstitialShown();
+      // 실패/미지원이어도 그냥 흘려보냄 (기능 안 막음)
+      void showInterstitial(AD_GROUP_IDS.interstitial);
+    }
+  }, []);
+
   // 화면 전환 시 스크롤 최상단으로
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [route]);
 
-  // 하단 탭은 최상위 화면(홈/내보내기)에서만 노출
-  const showTab = route.name === "home" || route.name === "export";
+  // 하단 탭은 최상위 화면(홈/내역/내보내기)에서만 노출
+  const showTab =
+    route.name === "home" ||
+    route.name === "list" ||
+    route.name === "export";
 
   return (
     <div className="app">
@@ -46,6 +77,8 @@ export default function App() {
     switch (route.name) {
       case "home":
         return <HomeScreen kind={kind} onKindChange={setKind} />;
+      case "list":
+        return <ListScreen />;
       case "add":
         return <AddEditScreen kind={route.kind} onToast={showToast} />;
       case "edit":

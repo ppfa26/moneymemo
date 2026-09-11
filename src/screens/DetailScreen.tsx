@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { goBack, navigate } from "../router";
 import { deleteRecord, getRecord } from "../storage";
 import { KIND_LABEL, PAY_METHOD_LABEL } from "../types";
 import { formatDate, formatMoney } from "../utils";
-import { markDetailViewed } from "../ads/interstitialPolicy";
 
 interface Props {
   id: string;
@@ -14,16 +13,6 @@ export function DetailScreen({ id, onToast }: Props) {
   const record = useMemo(() => getRecord(id), [id]);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [zoomPhoto, setZoomPhoto] = useState<string | null>(null);
-
-  // 상세를 본 것 = 콘텐츠 소비. 홈 복귀 시 전면광고 노출 판단에 사용해요.
-  // 장례(부조금) 사유면 민감 맥락으로 표시해 광고를 스킵해요.
-  useEffect(() => {
-    if (record) {
-      const sensitive =
-        record.kind === "gift" && record.reason.includes("장례");
-      markDetailViewed(sensitive);
-    }
-  }, [record]);
 
   if (!record) {
     return (

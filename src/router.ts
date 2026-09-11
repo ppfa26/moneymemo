@@ -10,6 +10,7 @@ import type { Kind } from "./types";
 
 export type Route =
   | { name: "home" }
+  | { name: "list" }
   | { name: "add"; kind: Kind }
   | { name: "edit"; id: string }
   | { name: "detail"; id: string }
@@ -59,6 +60,7 @@ export function initRoute(): void {
   try {
     const screen = new URLSearchParams(window.location.search).get("screen");
     if (screen === "export") initial = { name: "export" };
+    else if (screen === "list") initial = { name: "list" };
     else if (screen === "settings") initial = { name: "settings" };
     else if (screen === "terms") initial = { name: "terms" };
     else if (screen === "privacy") initial = { name: "privacy" };

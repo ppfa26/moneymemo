@@ -664,6 +664,27 @@ textarea.text-input {
   margin: 14px 0;
 }
 
+/* ===== 내역 화면 합계 바 ===== */
+.list-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding: 0 2px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+.list-summary .ls-count {
+  color: var(--text-sub);
+}
+.list-summary .ls-nums .given {
+  color: var(--given, #f0402a);
+}
+.list-summary .ls-nums .received {
+  color: var(--received, #191f28);
+}
+
 /* ===== 상세 정보 행 ===== */
 .info-row {
   display: flex;
