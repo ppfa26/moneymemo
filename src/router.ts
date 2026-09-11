@@ -11,7 +11,6 @@ export type Route =
   | { name: "home" }
   | { name: "add" }
   | { name: "edit"; id: string }
-  | { name: "list" }
   | { name: "detail"; id: string }
   | { name: "export" }
   | { name: "settings" };
@@ -56,8 +55,7 @@ export function initRoute(): void {
   let initial: Route = { name: "home" };
   try {
     const screen = new URLSearchParams(window.location.search).get("screen");
-    if (screen === "list") initial = { name: "list" };
-    else if (screen === "export") initial = { name: "export" };
+    if (screen === "export") initial = { name: "export" };
     else if (screen === "settings") initial = { name: "settings" };
     else if (screen === "add") initial = { name: "add" };
   } catch {

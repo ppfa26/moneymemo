@@ -39,3 +39,28 @@ export function currentYearMonth(): string {
 export function currentYear(): string {
   return todayISO().slice(0, 4);
 }
+
+/** yyyy-mm 에서 n개월 이동 */
+export function shiftMonth(ym: string, delta: number): string {
+  const [y, m] = ym.split("-").map(Number);
+  const d = new Date(y, m - 1 + delta, 1);
+  const yy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  return `${yy}-${mm}`;
+}
+
+/** yyyy 에서 n년 이동 */
+export function shiftYear(y: string, delta: number): string {
+  return String(Number(y) + delta);
+}
+
+/** 표시용: "2026년 9월" */
+export function labelYearMonth(ym: string): string {
+  const [y, m] = ym.split("-");
+  return `${y}년 ${Number(m)}월`;
+}
+
+/** 표시용: "2026년" */
+export function labelYear(y: string): string {
+  return `${y}년`;
+}

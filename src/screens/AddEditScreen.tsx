@@ -211,13 +211,23 @@ export function AddEditScreen({ editId, onToast }: Props) {
       </div>
 
       <div className="fixed-bottom">
-        <button
-          className="btn btn-primary btn-block btn-lg"
-          disabled={!canSave || saving}
-          onClick={handleSave}
-        >
-          {saving ? "저장하고 있어요…" : isEdit ? "수정 완료" : "저장하기"}
-        </button>
+        <div className="row-btns">
+          <button
+            className="btn btn-ghost"
+            style={{ flex: "0 0 34%" }}
+            onClick={() => goBack()}
+          >
+            취소
+          </button>
+          <button
+            className="btn btn-primary btn-lg"
+            style={{ flex: 1 }}
+            disabled={!canSave || saving}
+            onClick={handleSave}
+          >
+            {saving ? "저장하고 있어요…" : isEdit ? "수정 완료" : "저장하기"}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 /* ===== 앱 레이아웃 (토스식: 화이트 배경 + 넉넉한 여백) ===== */
 .app {
+  height: 100%;
   min-height: 100%;
   display: flex;
   flex-direction: column;
@@ -7,29 +8,35 @@
   padding-top: var(--safe-top);
   max-width: 520px;
   margin: 0 auto;
+  overflow: hidden;
 }
 
 .page {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   padding-bottom: calc(var(--safe-bottom) + 12px);
 }
+/* 홈 외 화면은 세로 스크롤 허용 */
+.page:not(.home-page) {
+  overflow-y: auto;
+}
 
 /* ★ 커스텀 헤더 - 뒤로가기(←) 버튼 없음! 제목만. 토스 상단바가 back 제공. */
 .page-header {
-  padding: 20px 24px 12px;
+  padding: 16px 20px 8px;
 }
 .page-header h1 {
-  font-size: 26px;
+  font-size: 23px;
   font-weight: 800;
-  letter-spacing: -0.7px;
+  letter-spacing: -0.6px;
   color: var(--navy);
-  line-height: 1.25;
+  line-height: 1.2;
 }
 .page-header .sub {
-  margin-top: 6px;
-  font-size: 15px;
+  margin-top: 4px;
+  font-size: 14px;
   color: var(--text-sub);
   letter-spacing: -0.3px;
 }
@@ -41,13 +48,13 @@
 
 .home-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
 }
 .settings-btn {
-  font-size: 22px;
-  width: 42px;
-  height: 42px;
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
   border-radius: 12px;
   background: #f2f4f6;
   display: flex;
@@ -59,40 +66,127 @@
   transform: scale(0.95);
 }
 
+/* ===== 월/연 토글 ===== */
+.mode-toggle {
+  display: flex;
+  gap: 6px;
+  background: #f2f4f6;
+  padding: 4px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+}
+.mode-btn {
+  flex: 1;
+  padding: 9px 0;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-sub);
+  letter-spacing: -0.3px;
+  transition: all 0.15s ease;
+}
+.mode-btn.active {
+  background: var(--orange);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(255, 111, 15, 0.3);
+}
+
+/* 홈: 한 화면 레이아웃 (스크롤 최소화) */
+.home-page {
+  height: 100%;
+  min-height: 0;
+}
+.home-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: 4px;
+}
+.home-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.home-list::-webkit-scrollbar {
+  display: none;
+}
+.count-badge {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--orange);
+  background: #fff3ea;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+/* 요약카드 기간 이동 */
+.summary-period {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.summary-period .period-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--on-accent);
+}
+.period-arrow {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.period-arrow:active {
+  background: rgba(255, 255, 255, 0.32);
+}
+
 /* ===== 카드 ===== */
 .card {
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 20px;
-  padding: 20px;
+  border-radius: 18px;
+  padding: 18px;
 }
 .card + .card {
-  margin-top: 14px;
+  margin-top: 12px;
+}
+/* 리스트형 카드(레코드 나열)는 상하 패딩 축소 */
+.card.list-card {
+  padding: 4px 16px;
 }
 
 /* ===== 요약 대시보드 (홈 히어로) - 오렌지 그라데이션 ===== */
 .summary {
   background: linear-gradient(135deg, #ff8a2b 0%, var(--orange) 55%, var(--red-orange) 120%);
-  border-radius: 24px;
-  padding: 24px 22px;
+  border-radius: 20px;
+  padding: 18px 20px;
   color: var(--on-accent);
 }
 .summary .summary-title {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--on-accent-sub);
-  margin-bottom: 18px;
+  margin-bottom: 14px;
   letter-spacing: -0.3px;
 }
 .summary-net {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 .summary-net .net-label {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--on-accent-sub);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 .summary-net .net-value {
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.8px;
 }
@@ -100,7 +194,7 @@
   display: flex;
   gap: 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.22);
-  padding-top: 16px;
+  padding-top: 14px;
 }
 .summary-item {
   flex: 1;
@@ -175,8 +269,8 @@
 .record-item {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 15px 2px;
+  gap: 13px;
+  padding: 13px 2px;
   width: 100%;
   text-align: left;
   border-bottom: 1px solid var(--line);
@@ -465,10 +559,10 @@ textarea.text-input {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 28px 2px 12px;
+  margin: 18px 2px 10px;
 }
 .section-title h2 {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
   color: var(--navy);
   letter-spacing: -0.5px;
@@ -484,6 +578,9 @@ textarea.text-input {
   text-align: center;
   padding: 52px 20px;
   color: var(--text-weak);
+}
+.empty.compact {
+  padding: 26px 20px;
 }
 .empty .emoji {
   font-size: 44px;

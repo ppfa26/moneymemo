@@ -1,36 +1,70 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { navigate } from "../router";
 import { loadRecords } from "../storage";
-import { currentYearMonth, formatMoney, yearMonth } from "../utils";
+import type { Record } from "../types";
+import { formatMoney, todayISO } from "../utils";
 import { RecordItem } from "../components/RecordItem";
 import { AdBanner } from "../components/AdBanner";
 
+type Mode = "month" | "year";
+
 export function HomeScreen() {
   const records = useMemo(() => loadRecords(), []);
-  const ym = currentYearMonth();
-  const month = Number(ym.slice(5));
+  const today = todayISO();
+  const curYear = Number(today.slice(0, 4));
+  const curMonth = Number(today.slice(5, 7));
+
+  const [mode, setMode] = useState<Mode>("month");
+  const [year, setYear] = useState(curYear);
+  const [month, setMonth] = useState(curMonth);
+
+  // 선택 기간에 해당하는 기록
+  const filtered = useMemo(() => {
+    const yStr = String(year);
+    const mStr = String(month).padStart(2, "0");
+    return records.filter((r) => {
+      if (mode === "year") return r.date.slice(0, 4) === yStr;
+      return r.date.slice(0, 7) === `${yStr}-${mStr}`;
+    });
+  }, [records, mode, year, month]);
 
   const { received, given } = useMemo(() => {
     let received = 0;
     let given = 0;
-    for (const r of records) {
-      if (yearMonth(r.date) !== ym) continue;
+    for (const r of filtered) {
       if (r.direction === "received") received += r.amount;
       else given += r.amount;
     }
     return { received, given };
-  }, [records, ym]);
+  }, [filtered]);
 
   const net = received - given;
-  const recent = records.slice(0, 3);
+
+  function shift(dir: -1 | 1) {
+    if (mode === "year") {
+      setYear((y) => y + dir);
+      return;
+    }
+    let m = month + dir;
+    let y = year;
+    if (m < 1) {
+      m = 12;
+      y -= 1;
+    } else if (m > 12) {
+      m = 1;
+      y += 1;
+    }
+    setMonth(m);
+    setYear(y);
+  }
+
+  const periodLabel = mode === "year" ? `${year}년` : `${year}년 ${month}월`;
 
   return (
-    <div className="page">
+    <div className="page home-page">
+      {/* 헤더 */}
       <div className="page-header home-header">
-        <div>
-          <h1>경조사비 메모장</h1>
-          <div className="sub">주고받은 마음을 기록해요</div>
-        </div>
+        <h1>경조사비 메모장</h1>
         <button
           className="settings-btn"
           onClick={() => navigate({ name: "settings" })}
@@ -40,12 +74,36 @@ export function HomeScreen() {
         </button>
       </div>
 
-      <div className="page-body">
-        {/* 이번 달 요약 - 순액 크게 강조 */}
+      <div className="page-body home-body">
+        {/* 월/연도 전환 토글 */}
+        <div className="mode-toggle">
+          <button
+            className={`mode-btn ${mode === "month" ? "active" : ""}`}
+            onClick={() => setMode("month")}
+          >
+            월별
+          </button>
+          <button
+            className={`mode-btn ${mode === "year" ? "active" : ""}`}
+            onClick={() => setMode("year")}
+          >
+            연도별
+          </button>
+        </div>
+
+        {/* 요약 히어로 카드 (기간 이동 화살표 포함) */}
         <div className="summary">
-          <div className="summary-title">{month}월 한눈에 보기</div>
+          <div className="summary-period">
+            <button className="period-arrow" onClick={() => shift(-1)} aria-label="이전">
+              ‹
+            </button>
+            <span className="period-label">{periodLabel}</span>
+            <button className="period-arrow" onClick={() => shift(1)} aria-label="다음">
+              ›
+            </button>
+          </div>
           <div className="summary-net">
-            <div className="net-label">이번 달 순액</div>
+            <div className="net-label">순액</div>
             <div className="net-value">
               {net >= 0 ? "+" : ""}
               {formatMoney(net)}원
@@ -63,42 +121,26 @@ export function HomeScreen() {
           </div>
         </div>
 
-        {/* 최근 기록 */}
+        {/* 해당 기간 기록 목록 */}
         <div className="section-title">
-          <h2>최근 기록</h2>
-          {records.length > 0 && (
-            <button className="more" onClick={() => navigate({ name: "list" })}>
-              전체 보기
-            </button>
-          )}
+          <h2>{mode === "year" ? "올해 기록" : "이번 기록"}</h2>
+          <span className="count-badge">{filtered.length}건</span>
         </div>
 
-        {recent.length === 0 ? (
-          <div className="card empty">
-            <div className="emoji">📝</div>
-            <div className="msg">
-              아직 기록이 없어요.
-              <br />
-              아래 버튼으로 첫 기록을 남겨볼까요?
+        <div className="home-list">
+          {filtered.length === 0 ? (
+            <div className="empty">
+              <div className="emoji">📝</div>
+              <div className="msg">이 기간엔 기록이 없어요</div>
             </div>
-          </div>
-        ) : (
-          <div className="card">
-            {recent.map((r) => (
-              <RecordItem
-                key={r.id}
-                record={r}
-                onClick={(id) => navigate({ name: "detail", id })}
-              />
-            ))}
-          </div>
-        )}
+          ) : (
+            <RecordList records={filtered} />
+          )}
+        </div>
       </div>
 
-      {/* 홈 하단 배너 (상시) */}
-      <AdBanner slot="home" />
-
-      {/* 새 기록 버튼 */}
+      {/* 하단 배너 + 새 기록 버튼 */}
+      <AdBanner />
       <div className="fixed-bottom">
         <button
           className="btn btn-primary btn-block btn-lg"
@@ -107,6 +149,21 @@ export function HomeScreen() {
           기록 추가하기
         </button>
       </div>
+    </div>
+  );
+}
+
+// 목록(스크롤 영역) - 많으면 스크롤, 적으면 그대로
+function RecordList({ records }: { records: Record[] }) {
+  return (
+    <div className="card list-card">
+      {records.map((r) => (
+        <RecordItem
+          key={r.id}
+          record={r}
+          onClick={(id) => navigate({ name: "detail", id })}
+        />
+      ))}
     </div>
   );
 }

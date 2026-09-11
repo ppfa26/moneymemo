@@ -5,7 +5,6 @@ import { useSafeArea } from "./hooks/useSafeArea";
 import { loadMeta } from "./storage";
 import { HomeScreen } from "./screens/HomeScreen";
 import { AddEditScreen } from "./screens/AddEditScreen";
-import { ListScreen } from "./screens/ListScreen";
 import { DetailScreen } from "./screens/DetailScreen";
 import { ExportScreen } from "./screens/ExportScreen";
 import { SettingsScreen } from "./screens/SettingsScreen";
@@ -28,9 +27,8 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [route]);
 
-  // 하단 탭은 최상위 화면(홈/목록/내보내기)에서만 노출
-  const showTab =
-    route.name === "home" || route.name === "list" || route.name === "export";
+  // 하단 탭은 최상위 화면(홈/내보내기)에서만 노출
+  const showTab = route.name === "home" || route.name === "export";
 
   return (
     <div className="app">
@@ -48,8 +46,6 @@ export default function App() {
         return <AddEditScreen onToast={showToast} />;
       case "edit":
         return <AddEditScreen editId={route.id} onToast={showToast} />;
-      case "list":
-        return <ListScreen />;
       case "detail":
         return <DetailScreen id={route.id} onToast={showToast} />;
       case "export":

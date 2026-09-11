@@ -6,16 +6,11 @@ import { useEffect, useRef } from "react";
 import { useTossBanner } from "../hooks/useTossBanner";
 import { AD_GROUP_IDS } from "../ads/adConfig";
 
-interface Props {
-  slot: "home" | "list";
-}
-
-export function AdBanner({ slot }: Props) {
+export function AdBanner() {
   const { isReady, isSupported, attachBanner } = useTossBanner();
   const ref = useRef<HTMLDivElement>(null);
 
-  const adGroupId =
-    slot === "home" ? AD_GROUP_IDS.bannerHome : AD_GROUP_IDS.bannerList;
+  const adGroupId = AD_GROUP_IDS.bannerHome;
 
   useEffect(() => {
     if (!isReady || ref.current == null) return;

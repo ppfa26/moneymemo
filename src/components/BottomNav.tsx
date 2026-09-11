@@ -15,10 +15,10 @@ interface Props {
   current: Route["name"];
 }
 
+// 간소화: '전체' 탭은 홈에 흡수(홈에서 기간별로 봄). 하단 탭은 2개만.
 const TABS: { name: Route["name"]; label: string; icon: string; route: Route }[] =
   [
     { name: "home", label: "홈", icon: "🏠", route: { name: "home" } },
-    { name: "list", label: "전체", icon: "📋", route: { name: "list" } },
     { name: "export", label: "내보내기", icon: "📤", route: { name: "export" } },
   ];
 
