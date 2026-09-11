@@ -1,0 +1,180 @@
+import { useMemo, useState } from "react";
+import { goBack, navigate } from "../router";
+import { deleteRecord, getRecord } from "../storage";
+import {
+  DIRECTION_LABEL,
+  EVENT_EMOJI,
+  EVENT_LABEL,
+  RELATION_LABEL,
+} from "../types";
+import { formatDate, formatMoney } from "../utils";
+
+interface Props {
+  id: string;
+  onToast: (msg: string) => void;
+}
+
+export function DetailScreen({ id, onToast }: Props) {
+  const record = useMemo(() => getRecord(id), [id]);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [zoomPhoto, setZoomPhoto] = useState<string | null>(null);
+
+  if (!record) {
+    return (
+      <div className="page">
+        <div className="page-header">
+          <h1>기록</h1>
+        </div>
+        <div className="page-body">
+          <div className="card empty">
+            <div className="emoji">🗑️</div>
+            <div className="msg">삭제되었거나 없는 기록이에요.</div>
+          </div>
+          <button
+            className="btn btn-ghost btn-block"
+            style={{ marginTop: 16 }}
+            onClick={() => navigate({ name: "home" })}
+          >
+            홈으로
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  function handleDelete() {
+    deleteRecord(record!.id);
+    onToast("삭제되었어요");
+    goBack();
+  }
+
+  return (
+    <div className="page">
+      <div className="page-header">
+        <h1>
+          {EVENT_EMOJI[record.eventType]} {record.name}
+        </h1>
+        <div className="sub">
+          {DIRECTION_LABEL[record.direction]} ·{" "}
+          {EVENT_LABEL[record.eventType]}
+        </div>
+      </div>
+
+      <div className="page-body">
+        {/* 금액 강조 */}
+        <div className="card" style={{ textAlign: "center", padding: "26px 18px" }}>
+          <div style={{ fontSize: 13, color: "var(--text-sub)", marginBottom: 8 }}>
+            {DIRECTION_LABEL[record.direction]}
+          </div>
+          <div
+            className={`amt ${record.direction}`}
+            style={{ fontSize: 34, fontWeight: 800 }}
+          >
+            {record.direction === "given" ? "-" : "+"}
+            {formatMoney(record.amount)}원
+          </div>
+        </div>
+
+        {/* 정보 */}
+        <div className="card">
+          <div className="info-row">
+            <span className="k">이름</span>
+            <span className="v">{record.name}</span>
+          </div>
+          <div className="info-row">
+            <span className="k">관계</span>
+            <span className="v">{RELATION_LABEL[record.relation]}</span>
+          </div>
+          <div className="info-row">
+            <span className="k">종류</span>
+            <span className="v">{EVENT_LABEL[record.eventType]}</span>
+          </div>
+          <div className="info-row">
+            <span className="k">날짜</span>
+            <span className="v">{formatDate(record.date)}</span>
+          </div>
+          {record.memo && (
+            <div className="info-row">
+              <span className="k">메모</span>
+              <span className="v">{record.memo}</span>
+            </div>
+          )}
+        </div>
+
+        {/* 사진 */}
+        {record.photos.length > 0 && (
+          <div className="card">
+            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-sub)", marginBottom: 10 }}>
+              첨부 사진 {record.photos.length}장
+            </div>
+            <div className="detail-photos">
+              {record.photos.map((p) => (
+                <img
+                  key={p.id}
+                  src={p.dataUrl}
+                  alt="첨부 사진"
+                  onClick={() => setZoomPhoto(p.dataUrl)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 수정/삭제 */}
+      <div className="fixed-bottom">
+        {confirmDelete ? (
+          <div className="row-btns">
+            <button
+              className="btn btn-ghost"
+              onClick={() => setConfirmDelete(false)}
+            >
+              취소
+            </button>
+            <button className="btn btn-danger" onClick={handleDelete}>
+              정말 삭제
+            </button>
+          </div>
+        ) : (
+          <div className="row-btns">
+            <button
+              className="btn btn-danger"
+              onClick={() => setConfirmDelete(true)}
+            >
+              삭제
+            </button>
+            <button
+              className="btn btn-navy"
+              onClick={() => navigate({ name: "edit", id: record.id })}
+            >
+              수정
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* 사진 확대 오버레이 */}
+      {zoomPhoto && (
+        <div
+          onClick={() => setZoomPhoto(null)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.9)",
+            zIndex: 2000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 16,
+          }}
+        >
+          <img
+            src={zoomPhoto}
+            alt="확대 사진"
+            style={{ maxWidth: "100%", maxHeight: "100%", borderRadius: 12 }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}

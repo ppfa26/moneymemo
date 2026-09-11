@@ -1,0 +1,55 @@
+// 아주 가벼운 history 기반 라우터.
+//
+// ★ 심사 주의: 커스텀 헤더에 뒤로가기(←) 버튼을 넣지 않아요.
+//   토스가 자체 상단바(< 앱이름 ⋯ X)를 제공하므로, 그 back이 누르면
+//   브라우저 history의 popstate가 발생해요. 우리는 popstate만 구독해서
+//   화면 상태를 되돌리면 돼요 (시스템 back 핸들링).
+
+import { useEffect, useState } from "react";
+
+export type Route =
+  | { name: "home" }
+  | { name: "add" }
+  | { name: "edit"; id: string }
+  | { name: "list" }
+  | { name: "detail"; id: string }
+  | { name: "export" };
+
+function readRoute(): Route {
+  const state = window.history.state as Route | null;
+  if (state && typeof state.name === "string") {
+    return state;
+  }
+  return { name: "home" };
+}
+
+/** 새 화면으로 이동 (history push) */
+export function navigate(route: Route): void {
+  window.history.pushState(route, "", "");
+  window.dispatchEvent(new PopStateEvent("popstate", { state: route }));
+}
+
+/** 이전 화면으로 (직접 back 버튼이 필요할 때만 - 보통은 토스 상단바 사용) */
+export function goBack(): void {
+  window.history.back();
+}
+
+/** 현재 라우트를 구독하는 훅 */
+export function useRoute(): Route {
+  const [route, setRoute] = useState<Route>(() => readRoute());
+
+  useEffect(() => {
+    const onPop = () => setRoute(readRoute());
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
+  return route;
+}
+
+/** 앱 시작 시 최초 라우트를 home으로 세팅 (history 진입점 보장) */
+export function initRoute(): void {
+  if (window.history.state == null) {
+    window.history.replaceState({ name: "home" } as Route, "", "");
+  }
+}

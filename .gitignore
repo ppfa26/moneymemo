@@ -1,0 +1,19 @@
+# dependencies
+node_modules
+
+# build output
+dist
+*.ait
+.ait
+
+# logs
+*.log
+npm-debug.log*
+
+# editor / os
+.DS_Store
+.vscode
+.idea
+
+# ts build info
+node_modules/.tmp
