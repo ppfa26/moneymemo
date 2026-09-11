@@ -61,8 +61,8 @@ export function ExportScreen({ onToast }: Props) {
         exportExcel(records, fromISO, toISO);
         onToast("엑셀 파일을 저장했어요 📊");
       } else {
-        const ok = exportPDF(records, fromISO, toISO);
-        onToast(ok ? "PDF를 만들었어요 📄" : "팝업을 허용해 주세요");
+        exportPDF(records, fromISO, toISO);
+        onToast("PDF를 만들었어요 📄 (인쇄 → PDF로 저장)");
       }
     } catch {
       onToast("잠시 후 다시 시도해 주세요");
@@ -182,11 +182,6 @@ export function ExportScreen({ onToast }: Props) {
             <span className="dc-sub">한눈에 보기 · 인쇄용</span>
           </button>
         </div>
-
-        <p className="download-note">
-          다운로드 전에 짧은 광고가 나와요. 광고 덕분에 계속 무료로 쓸 수
-          있어요 🙂
-        </p>
       </div>
     </div>
   );

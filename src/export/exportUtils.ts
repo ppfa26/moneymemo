@@ -49,6 +49,26 @@ function rowsFor(records: Record[]): (string | number)[][] {
   ]);
 }
 
+/**
+ * Blob을 파일로 다운로드해요. (토스 웹뷰/모바일 브라우저 호환)
+ * <a download> 앵커를 만들어 클릭 → 즉시 정리.
+ */
+function downloadBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.rel = "noopener";
+  a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
+  // 약간의 지연 후 정리 (일부 웹뷰에서 즉시 revoke 시 실패)
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 1500);
+}
+
 /** 엑셀 파일 다운로드 */
 export function exportExcel(
   records: Record[],
@@ -80,12 +100,19 @@ export function exportExcel(
   ];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "경조사비");
-  XLSX.writeFile(wb, `경조사비_${fromISO}_${toISO}.xlsx`);
+
+  // writeFile 대신 바이너리 → Blob → 앵커 다운로드 (웹뷰 호환)
+  const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+  const blob = new Blob([wbout], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+  downloadBlob(blob, `경조사비_${fromISO}_${toISO}.xlsx`);
 }
 
 /**
- * PDF 내보내기 - 인쇄용 HTML을 새 창에 열어 브라우저 인쇄(→ PDF 저장)로 처리.
- * (외부 PDF 라이브러리 없이 가볍게 처리)
+ * PDF 내보내기 - 인쇄용 HTML을 숨김 iframe에 실어 인쇄(→ PDF 저장)로 처리.
+ * 토스 웹뷰는 window.open(팝업)을 막기 때문에 iframe 방식을 사용하고,
+ * iframe 인쇄가 불가능한 환경에서는 HTML 파일 다운로드로 폴백해요.
  */
 export function exportPDF(
   records: Record[],
@@ -137,15 +164,53 @@ export function exportPDF(
     </tr></thead>
     <tbody>${rows}</tbody>
   </table>
-  <script>window.onload = function(){ setTimeout(function(){ window.print(); }, 300); };</script>
 </body></html>`;
 
-  const win = window.open("", "_blank");
-  if (!win) return false;
-  win.document.open();
-  win.document.write(html);
-  win.document.close();
-  return true;
+  // 1순위: 숨김 iframe에 인쇄용 HTML을 실어 인쇄 다이얼로그 호출 (웹뷰 호환)
+  try {
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
+    iframe.setAttribute("aria-hidden", "true");
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow?.document;
+    if (!doc) {
+      document.body.removeChild(iframe);
+      throw new Error("iframe document unavailable");
+    }
+    doc.open();
+    doc.write(html);
+    doc.close();
+
+    const doPrint = () => {
+      try {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+      } catch {
+        /* 인쇄 실패는 아래 setTimeout 정리에서 폴백 없이 무시 */
+      }
+      // 인쇄 다이얼로그가 뜬 뒤 iframe 정리
+      setTimeout(() => {
+        if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+      }, 2000);
+    };
+
+    // 로드 완료 후 인쇄 (약간의 지연으로 폰트/렌더 안정화)
+    iframe.onload = () => setTimeout(doPrint, 300);
+    // 일부 웹뷰는 onload가 늦게/안 올 수 있어 안전망 타이머도 둠
+    setTimeout(doPrint, 800);
+    return true;
+  } catch {
+    // 2순위 폴백: HTML 파일로 다운로드 (사용자가 브라우저에서 열어 인쇄/PDF 저장)
+    const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+    downloadBlob(blob, `경조사비_${fromISO}_${toISO}.html`);
+    return true;
+  }
 }
 
 function escapeHtml(s: string): string {
