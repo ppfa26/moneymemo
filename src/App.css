@@ -1398,3 +1398,277 @@ textarea.text-input {
   font-size: 12px;
   color: var(--text-weak);
 }
+
+/* ===== 홈: 관리 리포트 CTA (요약 카드 안, 리워드 진입 버튼) ===== */
+.report-cta {
+  width: 100%;
+  margin-top: 14px;
+  padding: 13px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  color: #fff;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  transition: background 0.15s ease;
+}
+.report-cta:active {
+  background: rgba(255, 255, 255, 0.28);
+}
+.report-cta:disabled {
+  opacity: 0.7;
+}
+.report-cta .rcta-arrow {
+  font-size: 20px;
+  font-weight: 800;
+  opacity: 0.9;
+}
+
+/* ===== 관리 리포트 화면 ===== */
+.report-body {
+  padding: 4px 20px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.report-empty {
+  margin-top: 40px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 히어로 요약 */
+.report-hero {
+  background: linear-gradient(
+    135deg,
+    #ff8a2b 0%,
+    var(--orange) 55%,
+    var(--red-orange) 120%
+  );
+  border-radius: 18px;
+  padding: 18px 18px 16px;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(255, 111, 15, 0.22);
+}
+.report-hero .rh-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--on-accent-sub);
+  letter-spacing: -0.3px;
+}
+.report-hero .rh-main {
+  margin-top: 6px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.report-hero .rh-k {
+  font-size: 14px;
+  font-weight: 700;
+}
+.report-hero .rh-v {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+.report-hero .rh-v.minus {
+  color: #ffe4cf;
+}
+.report-hero .rh-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.report-hero .rh-cell {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  text-align: center;
+}
+.report-hero .rh-cell .c-k {
+  font-size: 11.5px;
+  color: var(--on-accent-sub);
+  font-weight: 600;
+}
+.report-hero .rh-cell .c-v {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+}
+
+/* 일반 리포트 카드 */
+.report-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+}
+.report-card .rc-title {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.3px;
+  margin-bottom: 12px;
+}
+
+/* 저축률/소비율 게이지 */
+.gauge-row {
+  margin-bottom: 12px;
+}
+.gauge-row:last-child {
+  margin-bottom: 0;
+}
+.gauge-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 13px;
+  color: var(--text-sub);
+  margin-bottom: 6px;
+}
+.gauge-label b {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.gauge-bar {
+  height: 10px;
+  border-radius: 6px;
+  background: #eef1f4;
+  overflow: hidden;
+}
+.gauge-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.4s ease;
+}
+.gauge-fill.save {
+  background: linear-gradient(90deg, #ffb066, var(--orange));
+}
+.gauge-fill.spend {
+  background: linear-gradient(90deg, #ff8a6f, var(--red-orange));
+}
+
+/* 비중 막대 (돈 나간 곳 / 자산 구성) */
+.part-row {
+  margin-bottom: 12px;
+}
+.part-row:last-child {
+  margin-bottom: 0;
+}
+.part-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+.part-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+.part-amt {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.3px;
+}
+.part-amt .part-pct {
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-weak);
+}
+.part-bar {
+  height: 8px;
+  border-radius: 5px;
+  background: #eef1f4;
+  overflow: hidden;
+}
+.part-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #ffb066, var(--orange));
+  transition: width 0.4s ease;
+}
+.part-fill.asset {
+  background: linear-gradient(90deg, #9ab5ff, #4b7bff);
+}
+
+/* 지난 기간 대비 */
+.compare-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13.5px;
+}
+.compare-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.compare-row:first-child {
+  padding-top: 0;
+}
+.cmp-k {
+  color: var(--text-sub);
+  font-weight: 600;
+}
+.cmp-v {
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+.cmp-v.up {
+  color: var(--orange);
+}
+.cmp-v.down {
+  color: #3182f6;
+}
+.cmp-v.flat {
+  color: var(--text-weak);
+}
+
+/* 자산 총합 라벨 */
+.asset-total {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-sub);
+  margin-bottom: 12px;
+}
+
+/* 한 줄 조언 */
+.report-advice {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: #fff6ee;
+  border: 1px solid #ffe0c2;
+  border-radius: 14px;
+  padding: 14px 15px;
+}
+.report-advice .adv-emoji {
+  font-size: 18px;
+  line-height: 1.4;
+}
+.report-advice .adv-text {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #8a4b12;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}

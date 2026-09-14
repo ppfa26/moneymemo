@@ -14,6 +14,7 @@ import { ListScreen } from "./screens/ListScreen";
 import { AddEditScreen } from "./screens/AddEditScreen";
 import { DetailScreen } from "./screens/DetailScreen";
 import { ExportScreen } from "./screens/ExportScreen";
+import { ReportScreen } from "./screens/ReportScreen";
 import { SettingsScreen } from "./screens/SettingsScreen";
 import { LegalScreen } from "./screens/LegalScreen";
 import { BottomNav } from "./components/BottomNav";
@@ -90,6 +91,14 @@ export default function App() {
         return <DetailScreen id={route.id} onToast={showToast} />;
       case "export":
         return <ExportScreen onToast={showToast} />;
+      case "report":
+        return (
+          <ReportScreen
+            initialMode={route.mode}
+            initialYear={route.year}
+            initialMonth={route.month}
+          />
+        );
       case "settings":
         return <SettingsScreen onToast={showToast} />;
       case "terms":

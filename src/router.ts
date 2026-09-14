@@ -15,6 +15,7 @@ export type Route =
   | { name: "edit"; id: string }
   | { name: "detail"; id: string }
   | { name: "export" }
+  | { name: "report"; mode?: "month" | "year"; year?: number; month?: number }
   | { name: "settings" }
   | { name: "terms" }
   | { name: "privacy" };
@@ -71,6 +72,7 @@ export function initRoute(): void {
           ? { filter: filter as Category }
           : {}),
       };
+    else if (screen === "report") initial = { name: "report" };
     else if (screen === "settings") initial = { name: "settings" };
     else if (screen === "terms") initial = { name: "terms" };
     else if (screen === "privacy") initial = { name: "privacy" };

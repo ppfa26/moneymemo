@@ -5,6 +5,8 @@ import type { InvestType, Record } from "../types";
 import { INVEST_TYPE_EMOJI, INVEST_TYPE_LABEL } from "../types";
 import { formatMoney, sortForDisplay, todayISO } from "../utils";
 import { RecordItem } from "../components/RecordItem";
+import { AD_GROUP_IDS } from "../ads/adConfig";
+import { showRewarded } from "../ads/fullScreenAd";
 
 type Mode = "month" | "year";
 
@@ -119,6 +121,21 @@ export function HomeScreen() {
     window.location.href = window.location.pathname;
   }
 
+  // ★ 관리 리포트 자세히 보기: 사용자가 '깊은 분석'이라는 이득을 얻는 순간.
+  //   리워드 광고를 본 뒤 리포트로 이동해요.
+  //   - 광고 실패/미지원/닫힘이어도 리포트는 그대로 열어줘요 (기능 미차단, 심사 안전).
+  const [reportBusy, setReportBusy] = useState(false);
+  async function handleOpenReport() {
+    if (reportBusy) return;
+    setReportBusy(true);
+    try {
+      await showRewarded(AD_GROUP_IDS.rewarded);
+    } finally {
+      setReportBusy(false);
+      navigate({ name: "report", mode, year, month });
+    }
+  }
+
   return (
     <div className="page home-page">
       <div className="page-header home-header">
@@ -202,6 +219,20 @@ export function HomeScreen() {
             <div className="calc-total encourage">
               <span className="ct-k">💪 모으기에 집중했어요</span>
             </div>
+          )}
+
+          {/* 관리 리포트 자세히 보기 (리워드 광고 후 상세 분석 화면) */}
+          {hasRecords && (
+            <button
+              className="report-cta"
+              onClick={handleOpenReport}
+              disabled={reportBusy}
+            >
+              <span className="rcta-text">
+                📊 {mode === "year" ? "올해" : "이달"} 관리 리포트 자세히 보기
+              </span>
+              <span className="rcta-arrow">{reportBusy ? "…" : "›"}</span>
+            </button>
           )}
         </div>
 
