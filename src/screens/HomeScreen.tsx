@@ -18,7 +18,6 @@ export function HomeScreen() {
   const [year, setYear] = useState(curYear);
   const [month, setMonth] = useState(curMonth);
 
-  // 급여 (매달 자동 반영). 편집 상태 관리.
   const [salary, setSalary] = useState<number>(() => getMonthlySalary());
   const [editingSalary, setEditingSalary] = useState(false);
   const [salaryInput, setSalaryInput] = useState<string>("");
@@ -33,13 +32,13 @@ export function HomeScreen() {
     });
   }, [records, mode, year, month]);
 
-  // 카테고리별 합계
+  // 기간 내 카테고리별 합계
   const sums = useMemo(() => {
-    let expense = 0; // 고정지출
-    let giftOut = 0; // 경조사비 냄
-    let giftIn = 0; // 경조사비 받음
-    let saving = 0; // 저축·투자
-    let salaryRecords = 0; // 급여 카테고리로 직접 입력한 것
+    let expense = 0;
+    let giftOut = 0;
+    let giftIn = 0;
+    let saving = 0;
+    let salaryRecords = 0;
     for (const r of filtered) {
       switch (r.category) {
         case "expense":
@@ -60,12 +59,21 @@ export function HomeScreen() {
     return { expense, giftOut, giftIn, saving, salaryRecords };
   }, [filtered]);
 
-  // 급여는 월별이면 설정값 1회, 연도별이면 ×12 (직접 입력한 급여 기록도 합산)
+  // ★ 저축 누적액: 전체 기간 동안 저축·투자에 넣은 총액 (보람!)
+  const totalSaved = useMemo(
+    () =>
+      records
+        .filter((r) => r.category === "saving")
+        .reduce((sum, r) => sum + r.amount, 0),
+    [records],
+  );
+
+  // 급여: 월별=설정값, 연도별=×12 + 직접입력 급여 기록
   const salaryBase = mode === "year" ? salary * 12 : salary;
-  const totalIncome = salaryBase + sums.salaryRecords + sums.giftIn;
-  // 나가는 돈 = 고정지출 + 경조사비 냄  (저축은 '내 돈'이라 남은 돈에서 빼되 소비는 아님)
-  const totalOut = sums.expense + sums.giftOut;
-  const remaining = totalIncome - totalOut - sums.saving;
+  const earned = salaryBase + sums.salaryRecords + sums.giftIn; // 번 돈
+  const spent = sums.expense + sums.giftOut; // 쓴 돈
+  const saved = sums.saving; // 이 기간 모은 돈
+  const remaining = earned - spent - saved; // 남은 돈
 
   function shift(dir: -1 | 1) {
     if (mode === "year") {
@@ -98,6 +106,7 @@ export function HomeScreen() {
 
   const periodLabel = mode === "year" ? `${year}년` : `${year}년 ${month}월`;
   const salaryInputNum = Number(salaryInput.replace(/[^0-9]/g, "")) || 0;
+  const hasRecords = filtered.length > 0;
 
   return (
     <div className="page home-page">
@@ -141,40 +150,40 @@ export function HomeScreen() {
             </button>
           </div>
           <div className="summary-net">
-            <div className="net-label">남은 돈</div>
+            <div className="net-label">이만큼 쓸 수 있어요</div>
             <div className="net-value">
               {remaining >= 0 ? "" : "-"}
               {formatMoney(Math.abs(remaining))}원
             </div>
           </div>
 
-          {/* 내역 브레이크다운 */}
+          {/* 벌고 · 쓰고 · 모으고 (초보자용 직관 요약) */}
           <div className="calc-rows">
             <div className="calc-row">
-              <span className="ck">💰 급여{mode === "year" ? " (연)" : ""}</span>
-              <span className="cv received">+{formatMoney(salaryBase + sums.salaryRecords)}</span>
+              <span className="ck">💰 벌었어요</span>
+              <span className="cv">+{formatMoney(earned)}원</span>
             </div>
-            {sums.giftIn > 0 && (
-              <div className="calc-row">
-                <span className="ck">🎁 경조사비 받음</span>
-                <span className="cv received">+{formatMoney(sums.giftIn)}</span>
-              </div>
-            )}
             <div className="calc-row">
-              <span className="ck">💳 고정지출</span>
-              <span className="cv given">-{formatMoney(sums.expense)}</span>
+              <span className="ck">💳 썼어요</span>
+              <span className="cv">-{formatMoney(spent)}원</span>
             </div>
-            {sums.giftOut > 0 && (
-              <div className="calc-row">
-                <span className="ck">🎁 경조사비 냄</span>
-                <span className="cv given">-{formatMoney(sums.giftOut)}</span>
-              </div>
-            )}
             <div className="calc-row">
-              <span className="ck">🏦 저축·투자</span>
-              <span className="cv saving">-{formatMoney(sums.saving)}</span>
+              <span className="ck">🏦 모았어요</span>
+              <span className="cv">-{formatMoney(saved)}원</span>
             </div>
           </div>
+        </div>
+
+        {/* 저축 누적 보람 카드 */}
+        <div className="saved-card">
+          <div className="saved-left">
+            <span className="saved-emoji">🏦</span>
+            <div>
+              <div className="saved-title">지금까지 모은 돈</div>
+              <div className="saved-sub">저축·투자를 차곡차곡 쌓았어요</div>
+            </div>
+          </div>
+          <div className="saved-amount">{formatMoney(totalSaved)}원</div>
         </div>
 
         {/* 급여 설정 카드 */}
@@ -197,7 +206,7 @@ export function HomeScreen() {
             </div>
           ) : (
             <button className="salary-row" onClick={startEditSalary}>
-              <span className="sk">💰 매달 급여</span>
+              <span className="sk">💰 매달 버는 돈</span>
               <span className="sv">
                 {salary > 0 ? `${formatMoney(salary)}원` : "입력하기"}
                 <span className="edit-hint"> ✎</span>
@@ -209,9 +218,21 @@ export function HomeScreen() {
         {/* 배너 광고 */}
         <AdBanner />
 
-        {/* 기록 목록 */}
+        {/* 기록 목록 or 초보자 안내 */}
         <div className="home-list">
-          {filtered.length > 0 && <RecordList records={filtered} />}
+          {hasRecords ? (
+            <RecordList records={filtered} />
+          ) : (
+            <div className="home-guide">
+              <div className="guide-emoji">👋</div>
+              <div className="guide-title">이렇게 시작해요</div>
+              <ol className="guide-steps">
+                <li>💰 위에서 <b>매달 버는 돈</b>을 입력해요</li>
+                <li>💳 <b>기록 추가하기</b>로 고정지출·저축을 넣어요</li>
+                <li>✅ 그러면 <b>쓸 수 있는 돈</b>이 자동으로 계산돼요</li>
+              </ol>
+            </div>
+          )}
         </div>
       </div>
 

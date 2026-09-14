@@ -101,9 +101,91 @@
   color: var(--orange);
 }
 
+/* ===== 저축 누적 보람 카드 ===== */
+.saved-card {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 15px 16px;
+  background: #fff8f2;
+  border: 1.5px solid #ffe0c7;
+  border-radius: 16px;
+}
+.saved-card .saved-left {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+.saved-card .saved-emoji {
+  font-size: 26px;
+  flex-shrink: 0;
+}
+.saved-card .saved-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink, #191f28);
+  letter-spacing: -0.3px;
+}
+.saved-card .saved-sub {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--text-sub);
+  letter-spacing: -0.3px;
+}
+.saved-card .saved-amount {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--orange);
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ===== 초보자 시작 안내 ===== */
+.home-guide {
+  margin-top: 16px;
+  padding: 22px 20px;
+  background: #fff;
+  border: 1.5px dashed #ffd0ad;
+  border-radius: 16px;
+  text-align: center;
+}
+.home-guide .guide-emoji {
+  font-size: 34px;
+}
+.home-guide .guide-title {
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink, #191f28);
+  letter-spacing: -0.4px;
+}
+.home-guide .guide-steps {
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  text-align: left;
+}
+.home-guide .guide-steps li {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-sub);
+  letter-spacing: -0.3px;
+}
+.home-guide .guide-steps b {
+  color: var(--orange);
+}
+
 /* ===== 급여 카드 ===== */
 .salary-card {
   margin-top: 12px;
+  margin-bottom: 16px; /* 아래 목록/배너와 붙지 않게 여백 */
 }
 .salary-row {
   width: 100%;
@@ -163,10 +245,12 @@
 }
 .calc-row .ck {
   color: rgba(255, 255, 255, 0.92);
+  white-space: nowrap;
 }
 .calc-row .cv {
   font-weight: 800;
   color: #fff;
+  white-space: nowrap;
 }
 
 /* 가로 스크롤 세그먼트 (필터가 많을 때) */
@@ -218,11 +302,20 @@
 .home-page::-webkit-scrollbar {
   display: none;
 }
+/* 홈 본문: 좌우 패딩을 0으로 두고, 자식들이 각자 padding을 가져요
+   → 요약카드는 자연스럽게 화면 끝까지(full-bleed), 넘침(overflow) 없음 */
 .home-body {
   display: flex;
   flex-direction: column;
-  padding-top: 4px;
-  padding-bottom: 4px;
+  padding: 4px 0 4px;
+}
+.home-body > .mode-toggle,
+.home-body > .saved-card,
+.home-body > .salary-card,
+.home-body > .ad-banner,
+.home-body > .home-list {
+  margin-left: 20px;
+  margin-right: 20px;
 }
 .home-list {
   /* 내용 높이만큼만 (flex 늘리기 제거 → 아래 큰 여백 사라짐) */
@@ -289,19 +382,15 @@
   padding: 18px 20px;
   color: var(--on-accent);
 }
-/* 홈 요약카드는 좌우 화면 끝까지 오렌지로 꽉 채워요 (흰 여백 제거) */
+/* 홈 요약카드: 좌우 화면 끝까지 오렌지로 꽉 채워요 (넘침 없이) */
 .home-body .summary {
-  margin: 0 -20px 0;
   border-radius: 0 0 24px 24px;
   padding: 18px 20px 22px;
 }
-/* 홈 상단 월/연 토글 위에도 흰 여백이 안 보이도록 배경 정리 */
-.home-body .mode-toggle {
-  margin: 0 0 14px;
-}
 /* 요약카드 아래(배너 자리) 여백 */
 .home-body .ad-banner {
-  margin: 16px 0;
+  margin-top: 16px;
+  margin-bottom: 4px;
   min-height: 60px;
 }
 .summary .summary-title {
@@ -785,7 +874,41 @@ textarea.text-input {
   margin: 14px 0;
 }
 
-/* ===== 내역 화면 합계 바 ===== */
+/* ===== 내역 화면 합계 (라벨형 3분할) ===== */
+.list-summary2 {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+.list-summary2 .ls2-item {
+  flex: 1;
+  background: #f2f4f6;
+  border-radius: 14px;
+  padding: 12px 10px;
+  text-align: center;
+}
+.list-summary2 .ls2-k {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-sub);
+  letter-spacing: -0.3px;
+}
+.list-summary2 .ls2-v {
+  margin-top: 5px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--ink, #191f28);
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+}
+.list-summary2 .ls2-v.given {
+  color: var(--given);
+}
+.list-summary2 .ls2-v.received {
+  color: var(--received);
+}
+
+/* ===== (구) 내역 화면 합계 바 ===== */
 .list-summary {
   display: flex;
   align-items: center;

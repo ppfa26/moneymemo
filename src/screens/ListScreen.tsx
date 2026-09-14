@@ -75,14 +75,20 @@ export function ListScreen() {
           />
         </div>
 
-        {/* 합계 요약 바 */}
-        <div className="list-summary">
-          <span className="ls-count">{total.count}건</span>
-          <span className="ls-nums">
-            <span className="given">-{formatMoney(total.out)}</span>
-            {" · "}
-            <span className="received">+{formatMoney(total.inn)}</span>
-          </span>
+        {/* 합계 요약 (라벨을 붙여 이해하기 쉽게) */}
+        <div className="list-summary2">
+          <div className="ls2-item">
+            <div className="ls2-k">총 기록</div>
+            <div className="ls2-v">{total.count}건</div>
+          </div>
+          <div className="ls2-item">
+            <div className="ls2-k">나간 돈</div>
+            <div className="ls2-v given">-{formatMoney(total.out)}원</div>
+          </div>
+          <div className="ls2-item">
+            <div className="ls2-k">들어온 돈</div>
+            <div className="ls2-v received">+{formatMoney(total.inn)}원</div>
+          </div>
         </div>
 
         {/* 배너 */}
