@@ -96,12 +96,21 @@ function runFullScreenAd(adGroupId: string): Promise<FullScreenResult> {
         // 로드 완료 → 표시 시작.
         cleanupShow = showFullScreenAd({
           options: { adGroupId },
+          // 문서 이벤트 흐름: requested → show → impression → (userEarnedReward) → dismissed
           onEvent: (e: { type: string }) => {
             switch (e.type) {
+              case "requested":
+                // 광고 표시 요청 성공. 곧 화면에 뜰 단계 → 살아있음으로 처리
+                kickIdle();
+                break;
               case "show":
               case "impression":
-                // 광고가 실제 화면에 떴어요 → 이제부터 무기한 대기(긴 게임 OK)
+                // 광고가 실제 화면에 떴어요 → 이제부터 무기한 대기(긴 게임 체험 OK)
                 showStarted = true;
+                clearIdle();
+                break;
+              case "clicked":
+                // 사용자가 광고를 눌러 외부로 이동했을 수 있음 → 대기 유지
                 clearIdle();
                 break;
               case "userEarnedReward":

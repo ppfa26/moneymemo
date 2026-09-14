@@ -1,9 +1,12 @@
-// 배너 광고 슬롯 컴포넌트.
+// 배너 광고 슬롯 컴포넌트 (앱인토스 공식 문서 기준).
+// 문서: /documentation/common/monetization/iaa/web-banner
 //
-// ★ 토스앱: 실제 배너 광고를 attach 해서 노출해요.
-// ★ 미리보기(브라우저/심사 초기): 실제 광고가 안 뜨는 대신
-//   "여기에 배너 광고가 나와요" 플레이스홀더를 보여줘서
-//   대표님/검수자가 광고 위치를 예상할 수 있게 해요.
+// ★ 토스앱: TossAds.attachBanner 로 실제 배너를 부착. SDK 기본 스타일(표준 컴포넌트) 사용.
+//   - 정책상 광고 색상/글꼴/문구를 임의로 바꾸면 안 되므로, SDK 프리셋(theme/tone/variant)만 사용.
+//   - 컨테이너는 width:100%, 고정형 height:96px (문서 권장).
+//   - 배너 refresh는 SDK가 자동 처리(우리가 인위적 refresh 하지 않음 → 정책 준수).
+//   - 언마운트 시 destroy() 호출로 메모리 누수 방지.
+// ★ 미리보기(브라우저): 실제 광고가 안 뜨므로 위치 예상용 플레이스홀더 표시.
 // ★ 기록 입력/사진 첨부 화면에는 절대 넣지 않아요 (이탈 방지).
 
 import { useEffect, useRef } from "react";
@@ -18,12 +21,14 @@ export function AdBanner() {
 
   useEffect(() => {
     if (!isReady || ref.current == null) return;
-    const handle = attachBanner(adGroupId, ref.current);
+    const handle = attachBanner(adGroupId, ref.current, {
+      theme: "auto", // 시스템 다크모드에 따라 자동 전환
+      tone: "blackAndWhite",
+      variant: "expanded", // 전체 너비 확장 형태
+    });
     return () => {
-      // attachBanner가 반환하는 정리 함수가 있으면 호출
-      if (handle && typeof (handle as { destroy?: () => void }).destroy === "function") {
-        (handle as { destroy: () => void }).destroy();
-      }
+      // 언마운트 시 배너 제거 (메모리 누수 방지)
+      handle?.destroy?.();
     };
   }, [isReady, adGroupId, attachBanner]);
 
@@ -37,9 +42,10 @@ export function AdBanner() {
     );
   }
 
+  // 실제 배너: 문서 권장 컨테이너(width:100%, 고정형 height:96px)
   return (
     <div className="ad-banner">
-      <div ref={ref} style={{ width: "100%" }} />
+      <div ref={ref} style={{ width: "100%", height: "96px" }} />
     </div>
   );
 }
