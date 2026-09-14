@@ -116,7 +116,7 @@ export function exportPDF(
 
   const rows = records
     .map((r) => {
-      const sign = r.flow === "in" ? "+" : "-";
+      const sign = r.flow === "out" ? "-" : "+";
       return `<tr>
         <td>${formatDate(r.date)}</td>
         <td>${CATEGORY_LABEL[r.category]}</td>

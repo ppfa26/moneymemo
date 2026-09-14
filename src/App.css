@@ -316,12 +316,12 @@
 
 /* ===== 남은돈 계산 브레이크다운 ===== */
 .calc-rows {
-  margin-top: 14px;
-  padding-top: 12px;
+  margin-top: 10px;
+  padding-top: 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 5px;
 }
 .calc-row {
   display: flex;
@@ -427,7 +427,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 .summary-period .period-label {
   font-size: 15px;
@@ -475,7 +475,7 @@
 /* 홈 요약카드: 4모서리 둥근 라운드 카드 (좌우 여백으로 가로폭 축소) */
 .home-body .summary {
   border-radius: 20px;
-  padding: 18px 18px 20px;
+  padding: 14px 18px 16px;
 }
 /* 요약카드 아래(배너 자리) 여백 */
 .home-body .ad-banner {
@@ -490,7 +490,7 @@
   letter-spacing: -0.3px;
 }
 .summary-net {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 .summary-net .net-label {
   font-size: 12px;
@@ -498,7 +498,7 @@
   margin-bottom: 4px;
 }
 .summary-net .net-value {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 800;
   letter-spacing: -0.8px;
 }
@@ -582,7 +582,7 @@
   display: flex;
   align-items: center;
   gap: 13px;
-  padding: 13px 2px;
+  padding: 10px 2px;
   width: 100%;
   text-align: left;
   border-bottom: 1px solid var(--line);

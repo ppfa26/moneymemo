@@ -197,7 +197,7 @@ export function HomeScreen() {
             </div>
             <div className="calc-row">
               <span className="ck">🏦 모았어요</span>
-              <span className="cv">-{formatMoney(saved)}원</span>
+              <span className="cv">+{formatMoney(saved)}원</span>
             </div>
           </div>
         </div>

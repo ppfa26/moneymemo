@@ -104,7 +104,9 @@ export const INVEST_TYPE_EMOJI: LabelMap<InvestType> = {
 
 /** 금액 표시 부호 (+/-) */
 export function amountSign(flow: Flow): "+" | "-" {
-  return flow === "in" ? "+" : "-";
+  // in(수입)·save(저축·투자)는 내 돈이 늘거나 자산으로 쌓이므로 +,
+  // out(지출)만 실제로 빠져나가는 - 예요.
+  return flow === "out" ? "-" : "+";
 }
 
 /** 금액 색상 클래스 */
