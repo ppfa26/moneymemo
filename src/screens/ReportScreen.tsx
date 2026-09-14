@@ -168,18 +168,6 @@ export function ReportScreen({
   const prevLabel = mode === "year" ? "작년" : "지난달";
   const hasAny = cur.earned + cur.spent + cur.saved > 0;
 
-  // 한 줄 코멘트 (조언)
-  const advice = useMemo(() => {
-    if (!hasAny) return "이 기간엔 아직 기록이 없어요. 홈에서 먼저 기록해보세요.";
-    if (leftover < 0)
-      return "번 돈보다 많이 쓰고 모았어요. 다음 기간엔 고정지출을 한 번 점검해보면 좋아요.";
-    if (savingRate >= 30)
-      return `저축률 ${savingRate}%! 아주 알차게 모으고 있어요. 이 흐름을 유지해보세요.`;
-    if (savingRate >= 10)
-      return `저축률 ${savingRate}%로 꾸준히 모으는 중이에요. 조금씩 늘려보면 어떨까요?`;
-    return "이번엔 저축 비중이 낮았어요. 다음 기간엔 작게라도 저축 기록을 남겨보세요.";
-  }, [hasAny, leftover, savingRate]);
-
   function diffText(v: number): { text: string; cls: string } {
     if (v === 0) return { text: "변화 없음", cls: "flat" };
     if (v > 0) return { text: `+${formatMoney(v)}원`, cls: "up" };
@@ -197,7 +185,9 @@ export function ReportScreen({
         {!hasAny ? (
           <div className="report-empty">
             <div className="guide-emoji">📊</div>
-            <p className="guide-desc">{advice}</p>
+            <p className="guide-desc">
+              이 기간엔 아직 기록이 없어요. 홈에서 먼저 기록해보세요.
+            </p>
           </div>
         ) : (
           <>
@@ -332,12 +322,6 @@ export function ReportScreen({
                 ))}
               </div>
             )}
-
-            {/* 한 줄 조언 */}
-            <div className="report-advice">
-              <span className="adv-emoji">💡</span>
-              <span className="adv-text">{advice}</span>
-            </div>
           </>
         )}
       </div>

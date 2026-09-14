@@ -46,7 +46,7 @@ export function AddEditScreen({ category: catProp, editId, onToast }: Props) {
   const isEdit = existing != null;
 
   const [category, setCategory] = useState<Category>(
-    existing?.category ?? catProp ?? "expense",
+    existing?.category ?? catProp ?? "salary",
   );
   // 경조사비만 받음/냄 선택. 나머지는 카테고리 기본 flow.
   const [giftFlow, setGiftFlow] = useState<Flow>(
