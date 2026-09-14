@@ -98,10 +98,13 @@ export function HomeScreen() {
 
   // 급여: 월별=설정값, 연도별=×12 + 직접입력 급여 기록
   const salaryBase = mode === "year" ? salary * 12 : salary;
-  const earned = salaryBase + sums.salaryRecords + sums.giftIn; // 번 돈
-  const spent = sums.expense + sums.giftOut; // 쓴 돈
-  const saved = sums.saving; // 이 기간 모은 돈
-  const remaining = earned - spent - saved; // 남은 돈
+  const earned = salaryBase + sums.salaryRecords + sums.giftIn; // 번 돈(급여+경조사 받음)
+  const spent = sums.expense + sums.giftOut; // 쓴 돈(고정지출+경조사 냄)
+  const saved = sums.saving; // 이 기간 모은 돈(저축·투자)
+  // ★ '쓸 수 있는 돈' = 번 돈 − 쓴 돈.
+  //   저축·투자는 '내 자산으로 쌓이는 돈'이라 지출이 아니므로 빼지 않아요.
+  //   (그래서 과거에 모아둔 목돈 때문에 쓸 수 있는 돈이 엉뚱한 마이너스가 되지 않아요)
+  const spendable = earned - spent; // 쓸 수 있는 돈 = 벌었어요 − 썼어요
 
   function shift(dir: -1 | 1) {
     if (mode === "year") {
@@ -180,12 +183,13 @@ export function HomeScreen() {
           <div className="summary-net">
             <div className="net-label">이만큼 쓸 수 있어요</div>
             <div className="net-value">
-              {remaining >= 0 ? "" : "-"}
-              {formatMoney(Math.abs(remaining))}원
+              {spendable >= 0 ? "" : "-"}
+              {formatMoney(Math.abs(spendable))}원
             </div>
+            <div className="net-sub">벌었어요 − 썼어요</div>
           </div>
 
-          {/* 벌고 · 쓰고 · 모으고 (초보자용 직관 요약) */}
+          {/* 벌고 · 쓰고 (쓸 수 있는 돈 계산식) */}
           <div className="calc-rows">
             <div className="calc-row">
               <span className="ck">💰 벌었어요</span>
@@ -195,9 +199,10 @@ export function HomeScreen() {
               <span className="ck">💳 썼어요</span>
               <span className="cv">-{formatMoney(spent)}원</span>
             </div>
-            <div className="calc-row">
+            {/* 모았어요: 계산에서 빼지 않고 '이 기간에 모은 돈'을 참고로만 표시 */}
+            <div className="calc-row calc-row-note">
               <span className="ck">🏦 모았어요</span>
-              <span className="cv">+{formatMoney(saved)}원</span>
+              <span className="cv">{formatMoney(saved)}원</span>
             </div>
           </div>
         </div>

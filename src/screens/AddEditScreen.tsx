@@ -80,9 +80,18 @@ export function AddEditScreen({ category: catProp, editId, onToast }: Props) {
   const amountNum = Number(amount.replace(/[^0-9]/g, "")) || 0;
   const isExpenseLike = category === "expense" || category === "saving";
   const isGift = category === "gift";
+  // 주식·부동산·코인은 '매월 정기결제' 개념이 없어서 결제방법/결제일을 안 보여줘요.
+  //   (예금·적금·기타는 자동이체/이체/현금처럼 매달 넣는 경우가 많아 보여줘요)
+  const isMarketAsset =
+    category === "saving" &&
+    (investType === "stock" ||
+      investType === "realestate" ||
+      investType === "coin");
+  // 결제방법·매달 결제일을 보여줄지 여부
+  const showPayFields = !isGift && !isMarketAsset;
   // 자동이체/계좌이체면 은행·계좌 입력란을 보여줘요
   const needsBank =
-    !isGift && (payMethod === "auto" || payMethod === "transfer");
+    showPayFields && (payMethod === "auto" || payMethod === "transfer");
   const canSave =
     name.trim().length > 0 &&
     amountNum > 0 &&
@@ -105,7 +114,7 @@ export function AddEditScreen({ category: catProp, editId, onToast }: Props) {
       photos,
       createdAt: existing?.createdAt ?? now,
       updatedAt: now,
-      ...(isExpenseLike || category === "salary"
+      ...(showPayFields && (isExpenseLike || category === "salary")
         ? { payMethod, payDay }
         : {}),
       ...(needsBank
@@ -207,8 +216,9 @@ export function AddEditScreen({ category: catProp, editId, onToast }: Props) {
           />
         </div>
 
-        {/* 급여/고정지출/저축: 결제·입금 방법 + 매달 날짜 */}
-        {!isGift && (
+        {/* 급여/고정지출/저축: 결제·입금 방법 + 매달 날짜
+            (주식·부동산·코인은 정기결제 개념이 없어 숨김) */}
+        {showPayFields && (
           <>
             <div className="field">
               <label>{category === "salary" ? "입금 방법" : "결제방법"}</label>

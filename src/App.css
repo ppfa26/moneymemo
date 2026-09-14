@@ -192,7 +192,7 @@
 /* 매달 버는 돈(.salary-row)과 완전히 동일한 스타일로 통일 */
 .stat-row {
   margin-top: 10px;
-  width: auto;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -340,6 +340,15 @@
   color: #fff;
   white-space: nowrap;
 }
+/* 모았어요 행: 계산에 안 들어가는 참고값이라 살짝 흐리게 */
+.calc-row.calc-row-note {
+  opacity: 0.82;
+}
+.calc-row.calc-row-note .ck,
+.calc-row.calc-row-note .cv {
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+}
 
 /* 가로 스크롤 세그먼트 (필터가 많을 때) */
 .segment.scroll-x {
@@ -392,20 +401,26 @@
 }
 /* 홈 본문: 좌우 패딩을 0으로 두고, 자식들이 각자 padding을 가져요
    → 요약카드는 자연스럽게 화면 끝까지(full-bleed), 넘침(overflow) 없음 */
+/* 홈도 다른 화면(.page-body)과 동일하게 좌우 20px 패딩으로 통일 →
+   모든 카드/요소의 가로 길이(좌우 경계)가 딱 맞아요 */
 .home-body {
   display: flex;
   flex-direction: column;
-  padding: 4px 0 4px;
+  padding: 4px 20px 28px; /* .page-body와 동일한 좌우 20px */
 }
+/* 홈 자식 요소들은 부모 패딩(20px) 안에서 100% 폭을 채워 서로 정렬돼요 */
 .home-body > .mode-toggle,
 .home-body > .summary,
 .home-body > .salary-card,
 .home-body > .stat-row,
 .home-body > .invest-card,
 .home-body > .ad-banner,
-.home-body > .home-list {
-  margin-left: 20px;
-  margin-right: 20px;
+.home-body > .home-list,
+.home-body > .btn-block {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  box-sizing: border-box;
 }
 .home-list {
   /* 내용 높이만큼만 (flex 늘리기 제거 → 아래 큰 여백 사라짐) */
@@ -501,6 +516,12 @@
   font-size: 26px;
   font-weight: 800;
   letter-spacing: -0.8px;
+}
+.summary-net .net-sub {
+  font-size: 11px;
+  color: var(--on-accent-sub);
+  margin-top: 3px;
+  letter-spacing: -0.3px;
 }
 .summary-row {
   display: flex;
