@@ -51,6 +51,11 @@
   align-items: center;
   justify-content: space-between;
 }
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .settings-btn {
   font-size: 20px;
   width: 40px;
@@ -219,6 +224,9 @@
 .stat-row .sv.given {
   color: var(--given);
 }
+.stat-row .sv.received {
+  color: var(--received);
+}
 .stat-row .sv.saved-hl {
   color: var(--orange);
 }
@@ -314,55 +322,45 @@
   padding: 0 18px;
 }
 
-/* 이번 기간 추가로 번 돈(투잡·부수입) 요약 행 */
-.salary-extra {
+/* 급여 내역 화면: 매달 기본 월급 설정 카드 */
+.salary-set-card {
+  margin-top: 12px;
+  padding: 16px;
+  background: #fff8f2;
+  border: 1.5px solid #ffe0c4;
+  border-radius: 16px;
+}
+.salary-set-card .ssc-head {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--ink, #191f28);
+  letter-spacing: -0.3px;
+  margin-bottom: 10px;
+}
+.salary-set-row {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 8px;
-  padding: 12px 16px;
-  background: #fff8f2;
-  border: 1.5px solid #ffe0c4;
-  border-radius: 14px;
+  padding: 13px 15px;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
 }
-.salary-extra .se-k {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--ink, #191f28);
-  letter-spacing: -0.3px;
-}
-.salary-extra .se-wrap {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.salary-extra .se-v {
-  font-size: 14.5px;
+.salary-set-row .ssr-v {
+  font-size: 18px;
   font-weight: 800;
   color: var(--received);
-  letter-spacing: -0.3px;
+  letter-spacing: -0.4px;
 }
-.salary-extra .stat-arrow {
+.salary-set-row .edit-hint {
+  font-size: 13px;
+  font-weight: 600;
   color: var(--text-weak);
-  font-size: 18px;
-  line-height: 1;
 }
-/* 이번에 더 번 돈 추가 버튼 (매달 다르게 버는 사람용) */
-.salary-add-btn {
-  width: 100%;
-  margin-top: 8px;
-  padding: 11px 0;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--orange);
-  background: #fff;
-  border: 1.5px dashed #ffc79c;
-  border-radius: 12px;
-  letter-spacing: -0.3px;
-}
-.salary-add-btn:active {
-  background: #fff6ef;
+.salary-set-card .field-hint {
+  margin-top: 10px;
+  margin-bottom: 0;
 }
 
 /* ===== 남은돈 계산 브레이크다운 ===== */
@@ -409,6 +407,13 @@
   color: #fff;
   letter-spacing: -0.6px;
   white-space: nowrap;
+}
+/* 모으기에 집중한 달(마이너스): 응원 문구만 크게 */
+.calc-total.encourage {
+  justify-content: flex-start;
+}
+.calc-total.encourage .ct-k {
+  font-size: 16px;
 }
 
 /* 가로 스크롤 세그먼트 (필터가 많을 때) */

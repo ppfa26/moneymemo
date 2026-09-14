@@ -61,8 +61,16 @@ export function initRoute(): void {
     const params = new URLSearchParams(window.location.search);
     const screen = params.get("screen");
     const id = params.get("id");
+    const filter = params.get("filter");
+    const validFilters = ["salary", "expense", "gift", "saving"];
     if (screen === "export") initial = { name: "export" };
-    else if (screen === "list") initial = { name: "list" };
+    else if (screen === "list")
+      initial = {
+        name: "list",
+        ...(filter && validFilters.includes(filter)
+          ? { filter: filter as Category }
+          : {}),
+      };
     else if (screen === "settings") initial = { name: "settings" };
     else if (screen === "terms") initial = { name: "terms" };
     else if (screen === "privacy") initial = { name: "privacy" };

@@ -174,4 +174,10 @@ export function getMonthlySalary(): number {
   return loadMeta().monthlySalary;
 }
 
+/** 모든 데이터 초기화 (기록 + 월급/설정). 되돌릴 수 없어요. */
+export function clearAllData(): void {
+  localStorage.removeItem(RECORDS_KEY);
+  localStorage.removeItem(META_KEY);
+}
+
 export type { AppMeta };

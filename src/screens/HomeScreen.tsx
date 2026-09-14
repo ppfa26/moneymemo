@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { navigate } from "../router";
-import { getMonthlySalary, loadRecords, setMonthlySalary } from "../storage";
+import { clearAllData, getMonthlySalary, loadRecords } from "../storage";
 import type { InvestType, Record } from "../types";
 import { INVEST_TYPE_EMOJI, INVEST_TYPE_LABEL } from "../types";
 import { formatMoney, sortForDisplay, todayISO } from "../utils";
@@ -18,9 +18,7 @@ export function HomeScreen() {
   const [year, setYear] = useState(curYear);
   const [month, setMonth] = useState(curMonth);
 
-  const [salary, setSalary] = useState<number>(() => getMonthlySalary());
-  const [editingSalary, setEditingSalary] = useState(false);
-  const [salaryInput, setSalaryInput] = useState<string>("");
+  const salary = useMemo(() => getMonthlySalary(), []);
 
   // 선택 기간 기록
   const filtered = useMemo(() => {
@@ -124,32 +122,40 @@ export function HomeScreen() {
     setYear(y);
   }
 
-  function startEditSalary() {
-    setSalaryInput(salary ? String(salary) : "");
-    setEditingSalary(true);
-  }
-  function saveSalary() {
-    const v = Number(salaryInput.replace(/[^0-9]/g, "")) || 0;
-    setMonthlySalary(v);
-    setSalary(v);
-    setEditingSalary(false);
-  }
-
   const periodLabel = mode === "year" ? `${year}년` : `${year}년 ${month}월`;
-  const salaryInputNum = Number(salaryInput.replace(/[^0-9]/g, "")) || 0;
   const hasRecords = filtered.length > 0;
+
+  function handleReset() {
+    const ok = window.confirm(
+      "모든 기록과 설정을 지우고 처음부터 다시 시작할까요?\n지운 내용은 되돌릴 수 없어요.",
+    );
+    if (!ok) return;
+    clearAllData();
+    // 홈부터 새로 시작 (localStorage 비워진 상태 반영)
+    window.location.href = window.location.pathname;
+  }
 
   return (
     <div className="page home-page">
       <div className="page-header home-header">
         <h1>머니메모</h1>
-        <button
-          className="settings-btn"
-          onClick={() => navigate({ name: "settings" })}
-          aria-label="설정"
-        >
-          ⚙️
-        </button>
+        <div className="header-actions">
+          <button
+            className="settings-btn"
+            onClick={handleReset}
+            aria-label="초기화"
+            title="초기화"
+          >
+            🗑️
+          </button>
+          <button
+            className="settings-btn"
+            onClick={() => navigate({ name: "settings" })}
+            aria-label="설정"
+          >
+            ⚙️
+          </button>
+        </div>
       </div>
 
       <div className="page-body home-body">
@@ -202,68 +208,30 @@ export function HomeScreen() {
             </div>
           </div>
 
-          {/* 쓰고 남은 돈 (강조) */}
-          <div className="calc-total">
-            <span className="ct-k">👍 쓰고 남은 돈</span>
-            <span className="ct-v">
-              {leftover >= 0 ? "+" : "-"}
-              {formatMoney(Math.abs(leftover))}원
-            </span>
-          </div>
-        </div>
-
-        {/* ① 매달 버는 돈 (고정 월급 편집 + 추가 수입 여러 건) */}
-        <div className="salary-card">
-          {editingSalary ? (
-            <div className="salary-edit">
-              <div className="amount-input">
-                <input
-                  inputMode="numeric"
-                  autoFocus
-                  placeholder="0"
-                  value={salaryInput ? formatMoney(salaryInputNum) : ""}
-                  onChange={(e) => setSalaryInput(e.target.value)}
-                />
-                <span className="won">원</span>
-              </div>
-              <button className="btn btn-primary" onClick={saveSalary}>
-                저장
-              </button>
+          {/* 쓰고 남은 돈 (강조) — 마이너스면 '모으기에 집중한 달'로 응원 */}
+          {leftover >= 0 ? (
+            <div className="calc-total">
+              <span className="ct-k">👍 쓰고 남은 돈</span>
+              <span className="ct-v">+{formatMoney(leftover)}원</span>
             </div>
           ) : (
-            <>
-              <button className="salary-row" onClick={startEditSalary}>
-                <span className="sk">💰 매달 버는 돈</span>
-                <span className="sv">
-                  {salary > 0 ? `${formatMoney(salary)}원` : "입력하기"}
-                  <span className="edit-hint"> ✎</span>
-                </span>
-              </button>
-              {/* 이번 기간 추가로 번 돈(투잡·부수입)이 있으면 보여줘요 */}
-              {sums.salaryRecords > 0 && (
-                <button
-                  className="salary-extra"
-                  onClick={() => navigate({ name: "list", filter: "salary" })}
-                >
-                  <span className="se-k">＋ 더 번 돈</span>
-                  <span className="se-wrap">
-                    <span className="se-v">
-                      +{formatMoney(sums.salaryRecords)}원
-                    </span>
-                    <span className="stat-arrow">›</span>
-                  </span>
-                </button>
-              )}
-              {/* 매달 다르게 버는 사람(투잡·자영업·영업)을 위한 추가 버튼 */}
-              <button
-                className="salary-add-btn"
-                onClick={() => navigate({ name: "add", category: "salary" })}
-              >
-                ＋ 이번에 더 번 돈 추가
-              </button>
-            </>
+            <div className="calc-total encourage">
+              <span className="ct-k">💪 모으기에 집중했어요</span>
+            </div>
           )}
         </div>
+
+        {/* ① 매달 버는 돈 - 눌러서 급여 내역/추가 (고정지출과 동일한 방식) */}
+        <button
+          className="stat-row tappable"
+          onClick={() => navigate({ name: "list", filter: "salary" })}
+        >
+          <span className="sk">💰 매달 버는 돈</span>
+          <span className="sv-wrap">
+            <span className="sv received">{formatMoney(earned)}원</span>
+            <span className="stat-arrow">›</span>
+          </span>
+        </button>
 
         {/* ② 매월 고정지출 (자동 합계) - 눌러서 내역 보기 */}
         <button
