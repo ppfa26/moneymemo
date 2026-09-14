@@ -5,7 +5,6 @@ import type { InvestType, Record } from "../types";
 import { INVEST_TYPE_EMOJI, INVEST_TYPE_LABEL } from "../types";
 import { formatMoney, todayISO } from "../utils";
 import { RecordItem } from "../components/RecordItem";
-import { AdBanner } from "../components/AdBanner";
 
 type Mode = "month" | "year";
 
@@ -272,9 +271,6 @@ export function HomeScreen() {
           </div>
         )}
 
-        {/* 배너 광고 */}
-        <AdBanner />
-
         {/* 기록 목록 or 초보자 안내 */}
         <div className="home-list">
           {hasRecords ? (
@@ -291,11 +287,11 @@ export function HomeScreen() {
             </div>
           )}
         </div>
-      </div>
 
-      <div className="fixed-bottom">
+        {/* 기록 추가하기 (스크롤 콘텐츠 내부) */}
         <button
           className="btn btn-primary btn-block btn-lg"
+          style={{ marginTop: 16 }}
           onClick={() => navigate({ name: "add" })}
         >
           기록 추가하기

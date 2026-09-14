@@ -161,7 +161,7 @@ export function DetailScreen({ id, onToast }: Props) {
         )}
       </div>
 
-      {/* 수정/삭제 */}
+      {/* 홈으로 + 수정/삭제 */}
       <div className="fixed-bottom">
         {confirmDelete ? (
           <div className="row-btns">
@@ -176,20 +176,29 @@ export function DetailScreen({ id, onToast }: Props) {
             </button>
           </div>
         ) : (
-          <div className="row-btns">
+          <>
             <button
-              className="btn btn-danger"
-              onClick={() => setConfirmDelete(true)}
+              className="btn btn-primary btn-block"
+              style={{ marginBottom: 10 }}
+              onClick={() => navigate({ name: "home" })}
             >
-              삭제
+              🏠 홈으로 가기
             </button>
-            <button
-              className="btn btn-navy"
-              onClick={() => navigate({ name: "edit", id: record.id })}
-            >
-              수정
-            </button>
-          </div>
+            <div className="row-btns">
+              <button
+                className="btn btn-danger"
+                onClick={() => setConfirmDelete(true)}
+              >
+                삭제
+              </button>
+              <button
+                className="btn btn-navy"
+                onClick={() => navigate({ name: "edit", id: record.id })}
+              >
+                수정
+              </button>
+            </div>
+          </>
         )}
       </div>
 

@@ -43,7 +43,7 @@
 
 .page-body {
   flex: 1;
-  padding: 0 20px;
+  padding: 4px 20px 28px; /* 상하단 일정한 공백 */
 }
 
 .home-header {
@@ -964,11 +964,32 @@ textarea.text-input {
   margin: 14px 0;
 }
 
+/* ===== 하단 고정 도크 (배너 + 탭바) ===== */
+.bottom-dock {
+  flex-shrink: 0;
+  background: #fff;
+  border-top: 1px solid var(--line);
+}
+.bottom-dock .ad-banner {
+  margin: 0;
+  min-height: 0;
+  padding: 6px 0;
+}
+/* 도크 안 배너는 실제 광고 있을 때만 위 구분선 */
+.bottom-dock .ad-banner:not(:empty) {
+  border-bottom: 1px solid var(--line);
+}
+/* 도크 안의 탭바는 자체 상단선 제거(도크가 이미 가짐) */
+.bottom-dock nav {
+  border-top: none !important;
+}
+
 /* ===== 내역 화면 합계 (라벨형 3분할) ===== */
 .list-summary2 {
   display: flex;
   gap: 8px;
   margin-top: 14px;
+  margin-bottom: 18px; /* 아래 목록과 붙지 않게 여백 */
 }
 .list-summary2 .ls2-item {
   flex: 1;
@@ -996,6 +1017,11 @@ textarea.text-input {
 }
 .list-summary2 .ls2-v.received {
   color: var(--received);
+}
+
+/* 내역: 이 종류로 바로 추가 버튼 */
+.add-in-list {
+  margin-bottom: 18px;
 }
 
 /* ===== (구) 내역 화면 합계 바 ===== */

@@ -5,7 +5,6 @@ import type { Category, Record } from "../types";
 import { CATEGORY_LABEL } from "../types";
 import { formatMoney } from "../utils";
 import { RecordItem } from "../components/RecordItem";
-import { AdBanner } from "../components/AdBanner";
 
 type Filter = "all" | Category;
 
@@ -16,6 +15,10 @@ const FILTERS: [Filter, string][] = [
   ["gift", CATEGORY_LABEL.gift],
   ["saving", CATEGORY_LABEL.saving],
 ];
+
+function labelOf(f: Filter): string {
+  return f === "all" ? "기록" : CATEGORY_LABEL[f];
+}
 
 interface ListProps {
   initialFilter?: Category;
@@ -95,8 +98,22 @@ export function ListScreen({ initialFilter }: ListProps) {
           </div>
         </div>
 
-        {/* 배너 */}
-        <AdBanner />
+        {/* 이 종류로 바로 추가 (예: 저축·투자 필터에서 모은 돈 한번에 입력) */}
+        <button
+          className="btn btn-primary btn-block add-in-list"
+          onClick={() =>
+            navigate({
+              name: "add",
+              category: filter === "all" ? undefined : filter,
+            })
+          }
+        >
+          {filter === "saving"
+            ? "＋ 모은 돈 추가하기"
+            : filter === "all"
+              ? "＋ 기록 추가하기"
+              : `＋ ${labelOf(filter)} 추가하기`}
+        </button>
 
         {/* 목록 */}
         <div className="home-list">

@@ -17,6 +17,7 @@ import { ExportScreen } from "./screens/ExportScreen";
 import { SettingsScreen } from "./screens/SettingsScreen";
 import { LegalScreen } from "./screens/LegalScreen";
 import { BottomNav } from "./components/BottomNav";
+import { AdBanner } from "./components/AdBanner";
 import { Toast } from "./components/Toast";
 
 // 최초 진입 라우트 세팅 + 최초 실행 시각 기록(24시간 유예용)
@@ -65,7 +66,12 @@ export default function App() {
   return (
     <div className="app">
       {renderScreen()}
-      {showTab && <BottomNav current={route.name} />}
+      {showTab && (
+        <div className="bottom-dock">
+          <AdBanner />
+          <BottomNav current={route.name} />
+        </div>
+      )}
       {toast && <Toast message={toast} onDone={() => setToast(null)} />}
     </div>
   );
