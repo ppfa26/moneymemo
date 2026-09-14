@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { navigate } from "../router";
 import { getMonthlySalary, loadRecords, setMonthlySalary } from "../storage";
-import type { Record } from "../types";
+import type { InvestType, Record } from "../types";
+import { INVEST_TYPE_EMOJI, INVEST_TYPE_LABEL } from "../types";
 import { formatMoney, todayISO } from "../utils";
 import { RecordItem } from "../components/RecordItem";
 import { AdBanner } from "../components/AdBanner";
@@ -81,6 +82,19 @@ export function HomeScreen() {
     let sum = 0;
     latest.forEach((v) => (sum += v));
     return sum;
+  }, [records]);
+
+  // ★ 투자 자산: 저축·투자 기록을 종류별(예금/주식/부동산/코인/기타)로 누적 합산
+  const investByType = useMemo(() => {
+    const map = new Map<InvestType, number>();
+    records
+      .filter((r) => r.category === "saving")
+      .forEach((r) => {
+        const t: InvestType = r.investType ?? "deposit";
+        map.set(t, (map.get(t) ?? 0) + r.amount);
+      });
+    // 금액 큰 순으로 정렬
+    return [...map.entries()].sort((a, b) => b[1] - a[1]);
   }, [records]);
 
   // 급여: 월별=설정값, 연도별=×12 + 직접입력 급여 기록
@@ -218,17 +232,45 @@ export function HomeScreen() {
           )}
         </div>
 
-        {/* ② 매월 고정지출 (자동 합계) */}
-        <div className="stat-row">
+        {/* ② 매월 고정지출 (자동 합계) - 눌러서 내역 보기 */}
+        <button
+          className="stat-row tappable"
+          onClick={() => navigate({ name: "list", filter: "expense" })}
+        >
           <span className="sk">💳 매월 고정지출</span>
-          <span className="sv given">{formatMoney(monthlyExpense)}원</span>
-        </div>
+          <span className="sv-wrap">
+            <span className="sv given">{formatMoney(monthlyExpense)}원</span>
+            <span className="stat-arrow">›</span>
+          </span>
+        </button>
 
-        {/* ③ 지금까지 모은 돈 (저축 누적) */}
-        <div className="stat-row">
+        {/* ③ 지금까지 모은 돈 (저축 누적) - 눌러서 내역 보기 */}
+        <button
+          className="stat-row tappable"
+          onClick={() => navigate({ name: "list", filter: "saving" })}
+        >
           <span className="sk">🏦 지금까지 모은 돈</span>
-          <span className="sv saved-hl">{formatMoney(totalSaved)}원</span>
-        </div>
+          <span className="sv-wrap">
+            <span className="sv saved-hl">{formatMoney(totalSaved)}원</span>
+            <span className="stat-arrow">›</span>
+          </span>
+        </button>
+
+        {/* ④ 투자 자산 (종류별) */}
+        {investByType.length > 0 && (
+          <div className="invest-card">
+            <div className="invest-head">📊 내 투자 자산</div>
+            {investByType.map(([t, amt]) => (
+              <div key={t} className="invest-row">
+                <span className="ik">
+                  {INVEST_TYPE_EMOJI[t as InvestType]}{" "}
+                  {INVEST_TYPE_LABEL[t as InvestType]}
+                </span>
+                <span className="iv">{formatMoney(amt)}원</span>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* 배너 광고 */}
         <AdBanner />

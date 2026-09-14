@@ -75,7 +75,7 @@ export default function App() {
       case "home":
         return <HomeScreen />;
       case "list":
-        return <ListScreen />;
+        return <ListScreen initialFilter={route.filter} />;
       case "add":
         return <AddEditScreen category={route.category} onToast={showToast} />;
       case "edit":

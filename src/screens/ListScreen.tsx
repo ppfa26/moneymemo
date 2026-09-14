@@ -17,9 +17,13 @@ const FILTERS: [Filter, string][] = [
   ["saving", CATEGORY_LABEL.saving],
 ];
 
-export function ListScreen() {
+interface ListProps {
+  initialFilter?: Category;
+}
+
+export function ListScreen({ initialFilter }: ListProps) {
   const all = useMemo(() => loadRecords(), []);
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<Filter>(initialFilter ?? "all");
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {

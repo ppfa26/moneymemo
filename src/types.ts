@@ -15,6 +15,9 @@ export type Flow = "in" | "out" | "save";
 /** 고정지출/급여 결제·입금 방법 */
 export type PayMethod = "card" | "transfer" | "auto" | "cash" | "etc";
 
+/** 저축·투자 종류 */
+export type InvestType = "deposit" | "stock" | "realestate" | "coin" | "etc";
+
 /** 사진 첨부 (base64 data URL로 로컬 저장) */
 export interface PhotoAttachment {
   id: string;
@@ -37,6 +40,8 @@ export interface Record {
   bankName?: string;
   /** 자동이체/계좌이체: 계좌번호 뒷 5자리 (전체번호는 저장 안 함 - 개인정보 최소화) */
   accountLast5?: string;
+  /** 저축·투자: 종류 (예금/주식/부동산/코인 등) */
+  investType?: InvestType;
   /** 경조사비: 사유 */
   reason?: string;
   memo?: string;
@@ -79,6 +84,22 @@ export const PAY_METHOD_LABEL: LabelMap<PayMethod> = {
   auto: "자동이체",
   cash: "현금",
   etc: "기타",
+};
+
+export const INVEST_TYPE_LABEL: LabelMap<InvestType> = {
+  deposit: "예금·적금",
+  stock: "주식",
+  realestate: "부동산",
+  coin: "코인",
+  etc: "기타",
+};
+
+export const INVEST_TYPE_EMOJI: LabelMap<InvestType> = {
+  deposit: "💵",
+  stock: "📈",
+  realestate: "🏠",
+  coin: "🪙",
+  etc: "📦",
 };
 
 /** 금액 표시 부호 (+/-) */

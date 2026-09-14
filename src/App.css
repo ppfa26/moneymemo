@@ -222,6 +222,59 @@
 .stat-row .sv.saved-hl {
   color: var(--orange);
 }
+.stat-row.tappable {
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+.stat-row.tappable:active {
+  background: #fafbfc;
+}
+.stat-row .sv-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.stat-row .stat-arrow {
+  color: var(--text-weak);
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* ===== 투자 자산 카드 (종류별) ===== */
+.invest-card {
+  margin-top: 10px;
+  margin-bottom: 16px;
+  padding: 15px 16px 6px;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+}
+.invest-card .invest-head {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink, #191f28);
+  letter-spacing: -0.3px;
+  margin-bottom: 10px;
+}
+.invest-card .invest-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-top: 1px solid var(--line);
+}
+.invest-card .invest-row .ik {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-sub);
+  letter-spacing: -0.3px;
+}
+.invest-card .invest-row .iv {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--orange);
+  letter-spacing: -0.3px;
+}
 .salary-row {
   width: 100%;
   display: flex;
@@ -345,8 +398,10 @@
   padding: 4px 0 4px;
 }
 .home-body > .mode-toggle,
+.home-body > .summary,
 .home-body > .salary-card,
 .home-body > .stat-row,
+.home-body > .invest-card,
 .home-body > .ad-banner,
 .home-body > .home-list {
   margin-left: 20px;
@@ -417,10 +472,10 @@
   padding: 18px 20px;
   color: var(--on-accent);
 }
-/* 홈 요약카드: 좌우 화면 끝까지 오렌지로 꽉 채워요 (넘침 없이) */
+/* 홈 요약카드: 4모서리 둥근 라운드 카드 (좌우 여백으로 가로폭 축소) */
 .home-body .summary {
-  border-radius: 0 0 24px 24px;
-  padding: 18px 20px 22px;
+  border-radius: 20px;
+  padding: 18px 18px 20px;
 }
 /* 요약카드 아래(배너 자리) 여백 */
 .home-body .ad-banner {

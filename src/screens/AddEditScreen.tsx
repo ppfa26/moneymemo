@@ -4,6 +4,7 @@ import { getRecord, upsertRecord } from "../storage";
 import type {
   Category,
   Flow,
+  InvestType,
   PayMethod,
   PhotoAttachment,
   Record,
@@ -12,6 +13,8 @@ import {
   CATEGORY_DEFAULT_FLOW,
   CATEGORY_EMOJI,
   CATEGORY_LABEL,
+  INVEST_TYPE_EMOJI,
+  INVEST_TYPE_LABEL,
   PAY_METHOD_LABEL,
 } from "../types";
 import { formatMoney, todayISO, uid } from "../utils";
@@ -19,6 +22,13 @@ import { PhotoAttach } from "../components/PhotoAttach";
 
 const CATEGORIES: Category[] = ["salary", "expense", "gift", "saving"];
 const PAY_METHODS: PayMethod[] = ["card", "transfer", "auto", "cash", "etc"];
+const INVEST_TYPES: InvestType[] = [
+  "deposit",
+  "stock",
+  "realestate",
+  "coin",
+  "etc",
+];
 const AMOUNT_CHIPS = [10000, 50000, 100000, 500000, 1000000];
 const REASON_CHIPS = ["결혼", "장례", "돌잔치", "생일", "출산", "개업"];
 
@@ -60,6 +70,9 @@ export function AddEditScreen({ category: catProp, editId, onToast }: Props) {
   );
   const [bankName, setBankName] = useState(existing?.bankName ?? "");
   const [accountLast5, setAccountLast5] = useState(existing?.accountLast5 ?? "");
+  const [investType, setInvestType] = useState<InvestType>(
+    existing?.investType ?? "deposit",
+  );
   const [reason, setReason] = useState(existing?.reason ?? "");
 
   const [saving, setSaving] = useState(false);
@@ -101,6 +114,7 @@ export function AddEditScreen({ category: catProp, editId, onToast }: Props) {
             accountLast5: accountLast5.trim() || undefined,
           }
         : {}),
+      ...(category === "saving" ? { investType } : {}),
       ...(isGift ? { reason: reason.trim() } : {}),
     };
 
@@ -145,6 +159,24 @@ export function AddEditScreen({ category: catProp, editId, onToast }: Props) {
             ))}
           </div>
         </div>
+
+        {/* 저축·투자: 투자 종류 선택 */}
+        {category === "saving" && (
+          <div className="field">
+            <label>어디에 모으나요?</label>
+            <div className="segment scroll-x">
+              {INVEST_TYPES.map((t) => (
+                <button
+                  key={t}
+                  className={`seg ${investType === t ? "active" : ""}`}
+                  onClick={() => setInvestType(t)}
+                >
+                  {INVEST_TYPE_EMOJI[t]} {INVEST_TYPE_LABEL[t]}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* 경조사비: 받음/냄 */}
         {isGift && (

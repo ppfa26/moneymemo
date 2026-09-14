@@ -10,7 +10,7 @@ import type { Category } from "./types";
 
 export type Route =
   | { name: "home" }
-  | { name: "list" }
+  | { name: "list"; filter?: Category }
   | { name: "add"; category?: Category }
   | { name: "edit"; id: string }
   | { name: "detail"; id: string }

@@ -4,6 +4,7 @@ import {
   amountSign,
   CATEGORY_EMOJI,
   CATEGORY_LABEL,
+  INVEST_TYPE_LABEL,
   PAY_METHOD_LABEL,
 } from "../types";
 import { formatDate, formatMoney } from "../utils";
@@ -20,6 +21,11 @@ export function RecordItem({ record, onClick }: Props) {
   let meta: string;
   if (record.category === "gift") {
     meta = `${record.reason ?? ""} · ${formatDate(record.date)}`;
+  } else if (record.category === "saving" && record.investType) {
+    const pm = record.payDay
+      ? ` · 매달 ${record.payDay}일`
+      : "";
+    meta = `${INVEST_TYPE_LABEL[record.investType]}${pm}`;
   } else if (record.payDay) {
     meta = `${record.payMethod ? PAY_METHOD_LABEL[record.payMethod] : ""} · 매달 ${record.payDay}일`;
   } else {

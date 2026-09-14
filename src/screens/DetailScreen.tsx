@@ -6,6 +6,8 @@ import {
   amountSign,
   CATEGORY_EMOJI,
   CATEGORY_LABEL,
+  INVEST_TYPE_EMOJI,
+  INVEST_TYPE_LABEL,
   PAY_METHOD_LABEL,
 } from "../types";
 import { formatDate, formatMoney } from "../utils";
@@ -92,6 +94,15 @@ export function DetailScreen({ id, onToast }: Props) {
             <div className="info-row">
               <span className="k">사유</span>
               <span className="v">{record.reason}</span>
+            </div>
+          )}
+          {record.category === "saving" && record.investType && (
+            <div className="info-row">
+              <span className="k">투자 종류</span>
+              <span className="v">
+                {INVEST_TYPE_EMOJI[record.investType]}{" "}
+                {INVEST_TYPE_LABEL[record.investType]}
+              </span>
             </div>
           )}
           {!isGift && record.payMethod && (
