@@ -54,7 +54,7 @@ export function DetailScreen({ id, onToast }: Props) {
 
   function handleDelete() {
     deleteRecord(record!.id);
-    onToast("삭제되었어요");
+    onToast("삭제했어요");
     goBack();
   }
 

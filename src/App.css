@@ -421,12 +421,12 @@
   letter-spacing: -0.6px;
   white-space: nowrap;
 }
-/* 모으기에 집중한 달(마이너스): 응원 문구만 크게 */
+/* 모으기에 집중한 달(마이너스): 응원 문구 + 값 함께 표시 */
 .calc-total.encourage {
-  justify-content: flex-start;
+  justify-content: space-between;
 }
 .calc-total.encourage .ct-k {
-  font-size: 16px;
+  font-size: 15px;
 }
 
 /* 가로 스크롤 세그먼트 (필터가 많을 때) */
@@ -1820,6 +1820,13 @@ textarea.text-input {
 }
 .gauge-fill.spend {
   background: linear-gradient(90deg, #ff8a6f, var(--red-orange));
+}
+.gauge-note {
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-weak);
+  letter-spacing: -0.3px;
 }
 
 /* 비중 막대 (돈 나간 곳 / 자산 구성) */

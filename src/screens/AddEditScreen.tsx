@@ -148,7 +148,7 @@ export function AddEditScreen({ category: catProp, editId, onToast }: Props) {
     <div className="page">
       <div className="page-header">
         <h1>{isEdit ? "기록 수정" : "새 기록 추가"}</h1>
-        <div className="sub">항목을 골라 · 얼마를 남겨요</div>
+        <div className="sub">종류를 고르고 금액을 적어주세요</div>
       </div>
 
       <div className="page-body">

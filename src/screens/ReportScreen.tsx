@@ -109,12 +109,17 @@ export function ReportScreen({
 
   const leftover = cur.earned - cur.spent - cur.saved;
 
-  // 저축률 = 모은 돈 / 번 돈
-  const savingRate =
+  // 저축률 = 모은 돈 / 번 돈, 소비율 = 쓴 돈 / 번 돈
+  // ★ 이번 기간에 번 돈보다 저축/소비가 클 수 있어요(과거 목돈 저축, 목돈 지출 등).
+  //   이때 1000% 같은 비현실적 숫자 대신 100%로 표기하고 별도 안내해요.
+  const savingRateRaw =
     cur.earned > 0 ? Math.round((cur.saved / cur.earned) * 100) : 0;
-  // 소비율 = 쓴 돈 / 번 돈
-  const spendRate =
+  const spendRateRaw =
     cur.earned > 0 ? Math.round((cur.spent / cur.earned) * 100) : 0;
+  const savingRate = Math.min(savingRateRaw, 100);
+  const spendRate = Math.min(spendRateRaw, 100);
+  const savingOver = savingRateRaw > 100; // 번 돈보다 많이 모음
+  const spendOver = spendRateRaw > 100; // 번 돈보다 많이 씀
 
   // 돈이 나간 곳 비중 (고정지출 / 경조사 냄 / 저축)
   const outParts = useMemo(() => {
@@ -217,33 +222,39 @@ export function ReportScreen({
               </div>
             </div>
 
-            {/* 저축률 / 소비율 게이지 */}
+            {/* 저축률 / 소비율 게이지 (이번 기간 번 돈 기준) */}
             <div className="report-card">
-              <div className="rc-title">📈 번 돈은 이렇게 나눴어요</div>
+              <div className="rc-title">📈 이번에 번 돈은 이렇게 나눴어요</div>
               <div className="gauge-row">
                 <div className="gauge-label">
                   <span>🏦 저축률</span>
-                  <b>{savingRate}%</b>
+                  <b>{savingOver ? "100%+" : `${savingRate}%`}</b>
                 </div>
                 <div className="gauge-bar">
                   <div
                     className="gauge-fill save"
-                    style={{ width: `${Math.min(savingRate, 100)}%` }}
+                    style={{ width: `${savingRate}%` }}
                   />
                 </div>
               </div>
               <div className="gauge-row">
                 <div className="gauge-label">
                   <span>💳 소비율</span>
-                  <b>{spendRate}%</b>
+                  <b>{spendOver ? "100%+" : `${spendRate}%`}</b>
                 </div>
                 <div className="gauge-bar">
                   <div
                     className="gauge-fill spend"
-                    style={{ width: `${Math.min(spendRate, 100)}%` }}
+                    style={{ width: `${spendRate}%` }}
                   />
                 </div>
               </div>
+              {(savingOver || spendOver) && (
+                <p className="gauge-note">
+                  이번 기간 번 돈보다 {savingOver ? "모은 돈" : "쓴 돈"}이 커요.
+                  과거 목돈이나 큰 지출이 포함된 것 같아요.
+                </p>
+              )}
             </div>
 
             {/* 돈이 나간 곳 비중 */}
@@ -299,7 +310,7 @@ export function ReportScreen({
               <div className="report-card">
                 <div className="rc-title">💼 지금까지 모은 자산 구성</div>
                 <div className="asset-total">
-                  총 {formatMoney(investByType.total)}원
+                  전체 기간 누적 · 총 {formatMoney(investByType.total)}원
                 </div>
                 {investByType.list.map((a) => (
                   <div key={a.type} className="part-row">

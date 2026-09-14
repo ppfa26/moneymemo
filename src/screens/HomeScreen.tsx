@@ -209,7 +209,7 @@ export function HomeScreen() {
             </div>
           </div>
 
-          {/* 쓰고 남은 돈 (강조) — 마이너스면 '모으기에 집중한 달'로 응원 */}
+          {/* 쓰고 남은 돈 (강조) — 마이너스면 '모으기에 집중한 달'로 응원하되 값도 표시 */}
           {leftover >= 0 ? (
             <div className="calc-total">
               <span className="ct-k">👍 쓰고 남은 돈</span>
@@ -218,6 +218,7 @@ export function HomeScreen() {
           ) : (
             <div className="calc-total encourage">
               <span className="ct-k">💪 모으기에 집중했어요</span>
+              <span className="ct-v">-{formatMoney(Math.abs(leftover))}원</span>
             </div>
           )}
 
