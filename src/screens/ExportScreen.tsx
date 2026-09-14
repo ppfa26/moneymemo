@@ -189,6 +189,12 @@ export function ExportScreen({ onToast }: Props) {
           </div>
         </div>
 
+        {/* 광고 안내 (리워드) */}
+        <div className="ad-hint-row">
+          <span className="ad-hint-badge">AD</span>
+          <span className="ad-hint-text">광고를 보면 무료로 저장할 수 있어요</span>
+        </div>
+
         {/* 다운로드 버튼 */}
         <div className="download-cards">
           <button

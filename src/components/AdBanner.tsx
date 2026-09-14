@@ -1,5 +1,9 @@
 // 배너 광고 슬롯 컴포넌트.
-// 토스앱이 아닌 환경(브라우저/심사 초기)에서는 조용히 아무것도 안 그려요.
+//
+// ★ 토스앱: 실제 배너 광고를 attach 해서 노출해요.
+// ★ 미리보기(브라우저/심사 초기): 실제 광고가 안 뜨는 대신
+//   "여기에 배너 광고가 나와요" 플레이스홀더를 보여줘서
+//   대표님/검수자가 광고 위치를 예상할 수 있게 해요.
 // ★ 기록 입력/사진 첨부 화면에는 절대 넣지 않아요 (이탈 방지).
 
 import { useEffect, useRef } from "react";
@@ -23,8 +27,15 @@ export function AdBanner() {
     };
   }, [isReady, adGroupId, attachBanner]);
 
-  // 미지원 환경에서는 렌더링 자체를 생략 (빈 공간/오해 방지)
-  if (!isSupported) return null;
+  // 미지원 환경(미리보기/브라우저): 광고 위치를 예상할 수 있는 플레이스홀더
+  if (!isSupported) {
+    return (
+      <div className="ad-banner ad-placeholder" aria-hidden="true">
+        <span className="ad-ph-badge">AD</span>
+        <span className="ad-ph-text">배너 광고 자리 · 앱에서 실제 광고가 나와요</span>
+      </div>
+    );
+  }
 
   return (
     <div className="ad-banner">

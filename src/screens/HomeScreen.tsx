@@ -228,8 +228,13 @@ export function HomeScreen() {
               onClick={handleOpenReport}
               disabled={reportBusy}
             >
-              <span className="rcta-text">
-                📊 {mode === "year" ? "올해" : "이달"} 관리 리포트 자세히 보기
+              <span className="rcta-left">
+                <span className="rcta-text">
+                  📊 {mode === "year" ? "올해" : "이달"} 관리 리포트 보기
+                </span>
+                <span className="rcta-hint">
+                  <span className="rcta-ad">AD</span> 광고 보고 무료로 열기
+                </span>
               </span>
               <span className="rcta-arrow">{reportBusy ? "…" : "›"}</span>
             </button>
