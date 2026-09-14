@@ -103,7 +103,8 @@
 
 /* ===== 저축 누적 보람 카드 ===== */
 .saved-card {
-  margin-top: 16px;
+  margin-top: 10px;
+  margin-bottom: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -184,8 +185,34 @@
 
 /* ===== 급여 카드 ===== */
 .salary-card {
-  margin-top: 12px;
-  margin-bottom: 16px; /* 아래 목록/배너와 붙지 않게 여백 */
+  margin-top: 16px;
+}
+
+/* ===== 통계 행 (매월 고정지출 등 · 읽기전용) ===== */
+.stat-row {
+  margin-top: 10px;
+  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 16px;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+}
+.stat-row .sk {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink, #191f28);
+  letter-spacing: -0.3px;
+}
+.stat-row .sv {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+.stat-row .sv.given {
+  color: var(--given);
 }
 .salary-row {
   width: 100%;
@@ -312,6 +339,7 @@
 .home-body > .mode-toggle,
 .home-body > .saved-card,
 .home-body > .salary-card,
+.home-body > .stat-row,
 .home-body > .ad-banner,
 .home-body > .home-list {
   margin-left: 20px;

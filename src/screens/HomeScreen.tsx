@@ -68,6 +68,21 @@ export function HomeScreen() {
     [records],
   );
 
+  // ★ 매월 고정지출 합계: 등록된 고정지출 항목들의 월 합계 (매달 반복 나가는 돈)
+  //   중복 방지를 위해 같은 항목명은 한 번만 (가장 최근 금액) 집계해요.
+  const monthlyExpense = useMemo(() => {
+    const latest = new Map<string, number>();
+    records
+      .filter((r) => r.category === "expense")
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .forEach((r) => {
+        if (!latest.has(r.name)) latest.set(r.name, r.amount);
+      });
+    let sum = 0;
+    latest.forEach((v) => (sum += v));
+    return sum;
+  }, [records]);
+
   // 급여: 월별=설정값, 연도별=×12 + 직접입력 급여 기록
   const salaryBase = mode === "year" ? salary * 12 : salary;
   const earned = salaryBase + sums.salaryRecords + sums.giftIn; // 번 돈
@@ -174,19 +189,7 @@ export function HomeScreen() {
           </div>
         </div>
 
-        {/* 저축 누적 보람 카드 */}
-        <div className="saved-card">
-          <div className="saved-left">
-            <span className="saved-emoji">🏦</span>
-            <div>
-              <div className="saved-title">지금까지 모은 돈</div>
-              <div className="saved-sub">저축·투자를 차곡차곡 쌓았어요</div>
-            </div>
-          </div>
-          <div className="saved-amount">{formatMoney(totalSaved)}원</div>
-        </div>
-
-        {/* 급여 설정 카드 */}
+        {/* ① 매달 버는 돈 (편집 가능) */}
         <div className="salary-card">
           {editingSalary ? (
             <div className="salary-edit">
@@ -213,6 +216,24 @@ export function HomeScreen() {
               </span>
             </button>
           )}
+        </div>
+
+        {/* ② 매월 고정지출 (자동 합계) */}
+        <div className="stat-row">
+          <span className="sk">💳 매월 고정지출</span>
+          <span className="sv given">{formatMoney(monthlyExpense)}원</span>
+        </div>
+
+        {/* ③ 지금까지 모은 돈 (저축 누적 보람) */}
+        <div className="saved-card">
+          <div className="saved-left">
+            <span className="saved-emoji">🏦</span>
+            <div>
+              <div className="saved-title">지금까지 모은 돈</div>
+              <div className="saved-sub">저축·투자를 차곡차곡 쌓았어요</div>
+            </div>
+          </div>
+          <div className="saved-amount">{formatMoney(totalSaved)}원</div>
         </div>
 
         {/* 배너 광고 */}
