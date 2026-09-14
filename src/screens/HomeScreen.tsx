@@ -224,16 +224,10 @@ export function HomeScreen() {
           <span className="sv given">{formatMoney(monthlyExpense)}원</span>
         </div>
 
-        {/* ③ 지금까지 모은 돈 (저축 누적 보람) */}
-        <div className="saved-card">
-          <div className="saved-left">
-            <span className="saved-emoji">🏦</span>
-            <div>
-              <div className="saved-title">지금까지 모은 돈</div>
-              <div className="saved-sub">저축·투자를 차곡차곡 쌓았어요</div>
-            </div>
-          </div>
-          <div className="saved-amount">{formatMoney(totalSaved)}원</div>
+        {/* ③ 지금까지 모은 돈 (저축 누적) */}
+        <div className="stat-row">
+          <span className="sk">🏦 지금까지 모은 돈</span>
+          <span className="sv saved-hl">{formatMoney(totalSaved)}원</span>
         </div>
 
         {/* 배너 광고 */}

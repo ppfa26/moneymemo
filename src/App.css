@@ -188,7 +188,8 @@
   margin-top: 16px;
 }
 
-/* ===== 통계 행 (매월 고정지출 등 · 읽기전용) ===== */
+/* ===== 통계 행 (매월 고정지출 / 모은 돈 등 · 읽기전용) ===== */
+/* 매달 버는 돈(.salary-row)과 완전히 동일한 스타일로 통일 */
 .stat-row {
   margin-top: 10px;
   width: auto;
@@ -200,6 +201,9 @@
   border: 1.5px solid var(--line);
   border-radius: 14px;
 }
+.stat-row:last-of-type {
+  margin-bottom: 16px; /* 마지막 카드와 목록/배너 사이 여백 */
+}
 .stat-row .sk {
   font-size: 14px;
   font-weight: 700;
@@ -210,9 +214,13 @@
   font-size: 15px;
   font-weight: 800;
   letter-spacing: -0.3px;
+  color: var(--orange);
 }
 .stat-row .sv.given {
   color: var(--given);
+}
+.stat-row .sv.saved-hl {
+  color: var(--orange);
 }
 .salary-row {
   width: 100%;
@@ -337,7 +345,6 @@
   padding: 4px 0 4px;
 }
 .home-body > .mode-toggle,
-.home-body > .saved-card,
 .home-body > .salary-card,
 .home-body > .stat-row,
 .home-body > .ad-banner,
