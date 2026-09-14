@@ -421,12 +421,27 @@
   letter-spacing: -0.6px;
   white-space: nowrap;
 }
-/* 모으기에 집중한 달(마이너스): 응원 문구 + 값 함께 표시 */
-.calc-total.encourage {
+/* 번 돈보다 많이 쓴 달(적자): 값 함께 표시 */
+.calc-total.spent-more {
   justify-content: space-between;
 }
-.calc-total.encourage .ct-k {
+.calc-total.spent-more .ct-k {
   font-size: 15px;
+}
+
+/* 저축 안내 (히어로 카드 안, 저축은 내 자산이라 긍정적으로) */
+.saved-note {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--on-accent-sub);
+  letter-spacing: -0.3px;
+}
+.saved-note b {
+  color: #fff;
+  font-weight: 800;
 }
 
 /* 가로 스크롤 세그먼트 (필터가 많을 때) */

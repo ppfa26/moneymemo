@@ -107,7 +107,9 @@ export function ReportScreen({
     [records, prevKey, mode],
   );
 
-  const leftover = cur.earned - cur.spent - cur.saved;
+  // 쓰고 남은 돈 = 번 돈 − 쓴 돈 (저축은 내 자산이라 차감 안 함).
+  // 홈 화면과 동일한 기준. 마이너스는 실제 지출이 수입보다 큰 경우(적자)에만.
+  const leftover = cur.earned - cur.spent;
 
   // 저축률 = 모은 돈 / 번 돈, 소비율 = 쓴 돈 / 번 돈
   // ★ 이번 기간에 번 돈보다 저축/소비가 클 수 있어요(과거 목돈 저축, 목돈 지출 등).

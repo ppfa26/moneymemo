@@ -85,10 +85,11 @@ export function HomeScreen() {
   const earned = sums.salaryRecords + sums.giftIn; // 번 돈(급여 기록+경조사 받음)
   const spent = sums.expense + sums.giftOut; // 쓴 돈(고정지출+경조사 냄)
   const saved = sums.saving; // 이 기간 모은 돈(저축·투자)
-  // ★ 쓰고 남은 돈 = 번 돈 − 쓴 돈 − 모은 돈.
-  //   이 기간에 실제로 벌어서 쓰고 모으고 '통장에 남은' 여윳돈이에요.
-  //   (모은 돈은 이 기간에 실제 넣은 금액만 차감 → 과거 목돈과 무관)
-  const leftover = earned - spent - saved; // 쓰고 남은 돈
+  // ★ 쓰고 남은 돈 = 번 돈 − 쓴 돈 (실제 소비만 차감).
+  //   저축은 '없어진 돈'이 아니라 내 자산으로 이동한 것이라 여기서 빼지 않아요.
+  //   → 저축을 아무리 많이 해도 마이너스가 안 나고, 실제로 지출이 수입보다
+  //     클 때만(진짜 적자) 마이너스가 나요. (사용자 오해 방지)
+  const leftover = earned - spent; // 쓰고 남은 돈(저축 제외)
 
   function shift(dir: -1 | 1) {
     if (mode === "year") {
@@ -209,16 +210,24 @@ export function HomeScreen() {
             </div>
           </div>
 
-          {/* 쓰고 남은 돈 (강조) — 마이너스면 '모으기에 집중한 달'로 응원하되 값도 표시 */}
+          {/* 쓰고 남은 돈 (강조) = 번 돈 − 쓴 돈. 저축은 별도로 안내.
+              마이너스는 '실제 지출이 수입보다 큰 경우'(진짜 적자)에만 떠요. */}
           {leftover >= 0 ? (
             <div className="calc-total">
               <span className="ct-k">👍 쓰고 남은 돈</span>
               <span className="ct-v">+{formatMoney(leftover)}원</span>
             </div>
           ) : (
-            <div className="calc-total encourage">
-              <span className="ct-k">💪 모으기에 집중했어요</span>
+            <div className="calc-total spent-more">
+              <span className="ct-k">📌 번 돈보다 많이 썼어요</span>
               <span className="ct-v">-{formatMoney(Math.abs(leftover))}원</span>
+            </div>
+          )}
+
+          {/* 이 기간에 저축한 금액이 있으면 긍정적으로 안내 (저축은 내 자산!) */}
+          {saved > 0 && (
+            <div className="saved-note">
+              🏦 이 중 <b>{formatMoney(saved)}원</b>을 저축·투자로 모았어요
             </div>
           )}
 
