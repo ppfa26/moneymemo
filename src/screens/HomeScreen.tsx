@@ -303,10 +303,9 @@ export function HomeScreen() {
               <div className="guide-emoji">👋</div>
               <div className="guide-title">이렇게 시작해요</div>
               <p className="guide-desc">
-                아래 <b>＋ 내 돈 기록하기</b> 버튼을 눌러 급여·고정지출·경조사비·저축을
-                하나씩 전부 적어보세요.
+                아래 <b>＋ 내 돈 기록하기</b>를 눌러
                 <br />
-                적은 만큼 금액은 자동으로 정리돼요.
+                급여·고정지출·경조사비·저축을 적으면 자동으로 정리돼요.
               </p>
             </div>
           )}
