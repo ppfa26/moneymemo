@@ -1496,7 +1496,7 @@ textarea.text-input {
   padding: 1px 5px;
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.25);
-  font-size: 9.5px;
+  font-size: 10px; /* AD 배지 크기 통일 (배너/힌트와 동일) */
   font-weight: 800;
   letter-spacing: 0.3px;
 }
@@ -1627,7 +1627,7 @@ textarea.text-input {
 }
 .ad-sim-badge {
   display: inline-block;
-  font-size: 10.5px;
+  font-size: 11px; /* 배지류 크기 정리 (오버레이는 조금 크게) */
   font-weight: 800;
   letter-spacing: 0.5px;
   color: var(--text-weak);
