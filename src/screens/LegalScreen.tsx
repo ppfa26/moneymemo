@@ -12,7 +12,7 @@ export function LegalScreen({ kind }: Props) {
     <div className="page">
       <div className="page-header">
         <h1>{isTerms ? "이용약관" : "개인정보처리방침"}</h1>
-        <div className="sub">머니메모 · 최종 업데이트 2026.01</div>
+        <div className="sub">머니메모 · 최종 업데이트 2026.09.14</div>
       </div>
 
       <div className="page-body">
@@ -127,7 +127,7 @@ function PrivacyContent() {
       <h3>7. 문의</h3>
       <p>개인정보 관련 문의는 앱 설정 &gt; 앱 정보를 통해 접수할 수 있어요.</p>
 
-      <p className="legal-foot">시행일: 2026년 1월 1일</p>
+      <p className="legal-foot">시행일: 2026년 9월 14일</p>
     </div>
   );
 }

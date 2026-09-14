@@ -58,6 +58,8 @@ export function AddEditScreen({ category: catProp, editId, onToast }: Props) {
   const [payDay, setPayDay] = useState<number>(
     existing?.payDay ?? Number(todayISO().slice(8, 10)),
   );
+  const [bankName, setBankName] = useState(existing?.bankName ?? "");
+  const [accountLast5, setAccountLast5] = useState(existing?.accountLast5 ?? "");
   const [reason, setReason] = useState(existing?.reason ?? "");
 
   const [saving, setSaving] = useState(false);
@@ -65,6 +67,9 @@ export function AddEditScreen({ category: catProp, editId, onToast }: Props) {
   const amountNum = Number(amount.replace(/[^0-9]/g, "")) || 0;
   const isExpenseLike = category === "expense" || category === "saving";
   const isGift = category === "gift";
+  // 자동이체/계좌이체면 은행·계좌 입력란을 보여줘요
+  const needsBank =
+    !isGift && (payMethod === "auto" || payMethod === "transfer");
   const canSave =
     name.trim().length > 0 &&
     amountNum > 0 &&
@@ -89,6 +94,12 @@ export function AddEditScreen({ category: catProp, editId, onToast }: Props) {
       updatedAt: now,
       ...(isExpenseLike || category === "salary"
         ? { payMethod, payDay }
+        : {}),
+      ...(needsBank
+        ? {
+            bankName: bankName.trim() || undefined,
+            accountLast5: accountLast5.trim() || undefined,
+          }
         : {}),
       ...(isGift ? { reason: reason.trim() } : {}),
     };
@@ -200,6 +211,39 @@ export function AddEditScreen({ category: catProp, editId, onToast }: Props) {
                 <span className="won">일</span>
               </div>
             </div>
+
+            {/* 자동이체/계좌이체: 은행 + 계좌 뒷5자리 */}
+            {needsBank && (
+              <div className="field">
+                <label>어느 계좌인가요? (선택)</label>
+                <input
+                  className="text-input"
+                  placeholder="은행명 (예: 토스뱅크, 국민은행)"
+                  value={bankName}
+                  onChange={(e) => setBankName(e.target.value)}
+                />
+                <div className="amount-input" style={{ marginTop: 8 }}>
+                  <span className="won" style={{ marginRight: 8 }}>계좌 뒷자리</span>
+                  <input
+                    inputMode="numeric"
+                    maxLength={5}
+                    placeholder="12345"
+                    value={accountLast5}
+                    onChange={(e) =>
+                      setAccountLast5(
+                        e.target.value.replace(/[^0-9]/g, "").slice(0, 5),
+                      )
+                    }
+                    style={{ textAlign: "right", letterSpacing: "2px" }}
+                  />
+                  <span className="won">뒷 5자리</span>
+                </div>
+                <p className="field-hint">
+                  안전을 위해 계좌번호는 <b>뒷 5자리만</b> 저장돼요. 전체 번호는
+                  저장하지 않아요.
+                </p>
+              </div>
+            )}
           </>
         )}
 

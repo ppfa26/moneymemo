@@ -33,6 +33,10 @@ export interface Record {
   payMethod?: PayMethod;
   /** 고정지출/급여: 매달 결제일(1~31) */
   payDay?: number;
+  /** 자동이체/계좌이체: 은행명 */
+  bankName?: string;
+  /** 자동이체/계좌이체: 계좌번호 뒷 5자리 (전체번호는 저장 안 함 - 개인정보 최소화) */
+  accountLast5?: string;
   /** 경조사비: 사유 */
   reason?: string;
   memo?: string;

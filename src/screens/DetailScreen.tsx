@@ -106,6 +106,18 @@ export function DetailScreen({ id, onToast }: Props) {
               <span className="v">매달 {record.payDay}일</span>
             </div>
           ) : null}
+          {!isGift && record.bankName && (
+            <div className="info-row">
+              <span className="k">은행</span>
+              <span className="v">{record.bankName}</span>
+            </div>
+          )}
+          {!isGift && record.accountLast5 && (
+            <div className="info-row">
+              <span className="k">계좌</span>
+              <span className="v">****{record.accountLast5}</span>
+            </div>
+          )}
           <div className="info-row">
             <span className="k">{isGift ? "날짜" : "시작일"}</span>
             <span className="v">{formatDate(record.date)}</span>

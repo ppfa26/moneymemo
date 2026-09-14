@@ -58,13 +58,16 @@ export function initRoute(): void {
 
   let initial: Route = { name: "home" };
   try {
-    const screen = new URLSearchParams(window.location.search).get("screen");
+    const params = new URLSearchParams(window.location.search);
+    const screen = params.get("screen");
+    const id = params.get("id");
     if (screen === "export") initial = { name: "export" };
     else if (screen === "list") initial = { name: "list" };
     else if (screen === "settings") initial = { name: "settings" };
     else if (screen === "terms") initial = { name: "terms" };
     else if (screen === "privacy") initial = { name: "privacy" };
     else if (screen === "add") initial = { name: "add" };
+    else if (screen === "detail" && id) initial = { name: "detail", id };
   } catch {
     /* noop */
   }

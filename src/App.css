@@ -209,23 +209,23 @@
   box-shadow: 0 2px 6px rgba(255, 111, 15, 0.3);
 }
 
-/* 홈: 한 화면 레이아웃 (스크롤 최소화) */
+/* 홈: 스크롤 허용 (내용만큼만 차지 → 하단 빈공간 최소화) */
 .home-page {
-  height: 100%;
-  min-height: 0;
-}
-.home-body {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  padding-top: 4px;
-}
-.home-list {
-  flex: 1;
   min-height: 0;
   overflow-y: auto;
   scrollbar-width: none;
+}
+.home-page::-webkit-scrollbar {
+  display: none;
+}
+.home-body {
+  display: flex;
+  flex-direction: column;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+.home-list {
+  /* 내용 높이만큼만 (flex 늘리기 제거 → 아래 큰 여백 사라짐) */
 }
 .home-list::-webkit-scrollbar {
   display: none;
@@ -288,6 +288,21 @@
   border-radius: 20px;
   padding: 18px 20px;
   color: var(--on-accent);
+}
+/* 홈 요약카드는 좌우 화면 끝까지 오렌지로 꽉 채워요 (흰 여백 제거) */
+.home-body .summary {
+  margin: 0 -20px 0;
+  border-radius: 0 0 24px 24px;
+  padding: 18px 20px 22px;
+}
+/* 홈 상단 월/연 토글 위에도 흰 여백이 안 보이도록 배경 정리 */
+.home-body .mode-toggle {
+  margin: 0 0 14px;
+}
+/* 요약카드 아래(배너 자리) 여백 */
+.home-body .ad-banner {
+  margin: 16px 0;
+  min-height: 60px;
 }
 .summary .summary-title {
   font-size: 13px;
@@ -449,6 +464,16 @@
 /* ===== 폼 ===== */
 .field {
   margin-bottom: 24px;
+}
+.field-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-weak);
+  letter-spacing: -0.3px;
+}
+.field-hint b {
+  color: var(--orange);
 }
 .field > label {
   display: block;
