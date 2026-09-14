@@ -184,6 +184,16 @@
   color: var(--text-sub);
   letter-spacing: -0.3px;
 }
+.home-guide .guide-desc {
+  margin-top: 12px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text-sub);
+  letter-spacing: -0.3px;
+}
+.home-guide .guide-desc b {
+  color: var(--orange);
+}
 .home-guide .guide-steps b {
   color: var(--orange);
 }

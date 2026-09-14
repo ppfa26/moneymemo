@@ -271,22 +271,21 @@ export function HomeScreen() {
             <div className="home-guide">
               <div className="guide-emoji">👋</div>
               <div className="guide-title">이렇게 시작해요</div>
-              <ol className="guide-steps">
-                <li>💰 위에서 <b>매달 버는 돈</b>을 입력해요</li>
-                <li>💳 <b>기록 추가하기</b>로 고정지출·저축을 넣어요</li>
-                <li>✅ 그러면 <b>쓸 수 있는 돈</b>이 자동으로 계산돼요</li>
-              </ol>
+              <p className="guide-desc">
+                아래 <b>＋ 내 돈 기록하기</b> 버튼을 눌러 급여·고정지출·경조사비·
+                저축을 하나씩 적어보세요. 적은 만큼 자동으로 정리돼요.
+              </p>
             </div>
           )}
         </div>
 
-        {/* 기록 추가하기 (스크롤 콘텐츠 내부) */}
+        {/* 기록 추가 버튼 (스크롤 콘텐츠 내부) */}
         <button
           className="btn btn-primary btn-block btn-lg"
           style={{ marginTop: 16 }}
           onClick={() => navigate({ name: "add" })}
         >
-          기록 추가하기
+          ＋ 내 돈 기록하기
         </button>
       </div>
     </div>
