@@ -42,7 +42,8 @@
 }
 
 .page-body {
-  flex: 1;
+  /* flex:1 제거 → 콘텐츠 높이만큼만 차지해서 아래 큰 빈 공간이 안 생겨요.
+     (.page가 스크롤 컨테이너라 내용이 길면 자연스럽게 스크롤돼요) */
   padding: 4px 20px 24px; /* 상하단 일정한 공백 */
 }
 
@@ -484,7 +485,7 @@
 .home-body {
   display: flex;
   flex-direction: column;
-  padding: 4px 20px 28px; /* .page-body와 동일한 좌우 20px */
+  padding: 4px 20px 16px; /* 하단 여백 축소 (버튼~배너 사이 빈공간 줄임) */
 }
 /* 홈 자식 요소들은 부모 패딩(20px) 안에서 100% 폭을 채워 서로 정렬돼요 */
 .home-body > .mode-toggle,
