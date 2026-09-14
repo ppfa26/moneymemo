@@ -1,5 +1,23 @@
 // 공용 유틸 함수
 
+import type { Record } from "./types";
+
+/**
+ * 목록 표시용 정렬: 부호 있는 금액 기준 내림차순.
+ *  - 들어온 돈/모은 돈(+)이 위, 나간 돈(-)이 아래
+ *  - 같은 부호끼리는 큰 금액이 위 (보기 편하게)
+ *  → 원본 배열을 바꾸지 않고 새 배열을 반환해요.
+ */
+export function sortForDisplay(records: Record[]): Record[] {
+  const signed = (r: Record) => (r.flow === "out" ? -r.amount : r.amount);
+  return [...records].sort((a, b) => {
+    const diff = signed(b) - signed(a);
+    if (diff !== 0) return diff;
+    // 금액까지 같으면 최근 등록이 위로
+    return b.createdAt - a.createdAt;
+  });
+}
+
 /** 간단한 고유 id 생성 */
 export function uid(): string {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;

@@ -3,7 +3,7 @@ import { navigate } from "../router";
 import { getMonthlySalary, loadRecords, setMonthlySalary } from "../storage";
 import type { InvestType, Record } from "../types";
 import { INVEST_TYPE_EMOJI, INVEST_TYPE_LABEL } from "../types";
-import { formatMoney, todayISO } from "../utils";
+import { formatMoney, sortForDisplay, todayISO } from "../utils";
 import { RecordItem } from "../components/RecordItem";
 
 type Mode = "month" | "year";
@@ -98,13 +98,13 @@ export function HomeScreen() {
 
   // 급여: 월별=설정값, 연도별=×12 + 직접입력 급여 기록
   const salaryBase = mode === "year" ? salary * 12 : salary;
-  const earned = salaryBase + sums.salaryRecords + sums.giftIn; // 번 돈(급여+경조사 받음)
+  const earned = salaryBase + sums.salaryRecords + sums.giftIn; // 번 돈(급여+추가수입+경조사 받음)
   const spent = sums.expense + sums.giftOut; // 쓴 돈(고정지출+경조사 냄)
   const saved = sums.saving; // 이 기간 모은 돈(저축·투자)
-  // ★ '쓸 수 있는 돈' = 번 돈 − 쓴 돈.
-  //   저축·투자는 '내 자산으로 쌓이는 돈'이라 지출이 아니므로 빼지 않아요.
-  //   (그래서 과거에 모아둔 목돈 때문에 쓸 수 있는 돈이 엉뚱한 마이너스가 되지 않아요)
-  const spendable = earned - spent; // 쓸 수 있는 돈 = 벌었어요 − 썼어요
+  // ★ 쓰고 남은 돈 = 번 돈 − 쓴 돈 − 모은 돈.
+  //   이 기간에 실제로 벌어서 쓰고 모으고 '통장에 남은' 여윳돈이에요.
+  //   (모은 돈은 이 기간에 실제 넣은 금액만 차감 → 과거 목돈과 무관)
+  const leftover = earned - spent - saved; // 쓰고 남은 돈
 
   function shift(dir: -1 | 1) {
     if (mode === "year") {
@@ -181,15 +181,12 @@ export function HomeScreen() {
             </button>
           </div>
           <div className="summary-net">
-            <div className="net-label">이만큼 쓸 수 있어요</div>
-            <div className="net-value">
-              {spendable >= 0 ? "" : "-"}
-              {formatMoney(Math.abs(spendable))}원
+            <div className="net-label">
+              {mode === "year" ? `${year}년` : `${month}월`} 이렇게 관리했어요
             </div>
-            <div className="net-sub">벌었어요 − 썼어요</div>
           </div>
 
-          {/* 벌고 · 쓰고 (쓸 수 있는 돈 계산식) */}
+          {/* 벌고 · 쓰고 · 모으고 (흐름 요약) */}
           <div className="calc-rows">
             <div className="calc-row">
               <span className="ck">💰 벌었어요</span>
@@ -199,15 +196,23 @@ export function HomeScreen() {
               <span className="ck">💳 썼어요</span>
               <span className="cv">-{formatMoney(spent)}원</span>
             </div>
-            {/* 모았어요: 계산에서 빼지 않고 '이 기간에 모은 돈'을 참고로만 표시 */}
-            <div className="calc-row calc-row-note">
+            <div className="calc-row">
               <span className="ck">🏦 모았어요</span>
-              <span className="cv">{formatMoney(saved)}원</span>
+              <span className="cv">+{formatMoney(saved)}원</span>
             </div>
+          </div>
+
+          {/* 쓰고 남은 돈 (강조) */}
+          <div className="calc-total">
+            <span className="ct-k">👍 쓰고 남은 돈</span>
+            <span className="ct-v">
+              {leftover >= 0 ? "+" : "-"}
+              {formatMoney(Math.abs(leftover))}원
+            </span>
           </div>
         </div>
 
-        {/* ① 매달 버는 돈 (편집 가능) */}
+        {/* ① 매달 버는 돈 (고정 월급 편집 + 추가 수입 여러 건) */}
         <div className="salary-card">
           {editingSalary ? (
             <div className="salary-edit">
@@ -226,13 +231,37 @@ export function HomeScreen() {
               </button>
             </div>
           ) : (
-            <button className="salary-row" onClick={startEditSalary}>
-              <span className="sk">💰 매달 버는 돈</span>
-              <span className="sv">
-                {salary > 0 ? `${formatMoney(salary)}원` : "입력하기"}
-                <span className="edit-hint"> ✎</span>
-              </span>
-            </button>
+            <>
+              <button className="salary-row" onClick={startEditSalary}>
+                <span className="sk">💰 매달 버는 돈</span>
+                <span className="sv">
+                  {salary > 0 ? `${formatMoney(salary)}원` : "입력하기"}
+                  <span className="edit-hint"> ✎</span>
+                </span>
+              </button>
+              {/* 이번 기간 추가로 번 돈(투잡·부수입)이 있으면 보여줘요 */}
+              {sums.salaryRecords > 0 && (
+                <button
+                  className="salary-extra"
+                  onClick={() => navigate({ name: "list", filter: "salary" })}
+                >
+                  <span className="se-k">＋ 더 번 돈</span>
+                  <span className="se-wrap">
+                    <span className="se-v">
+                      +{formatMoney(sums.salaryRecords)}원
+                    </span>
+                    <span className="stat-arrow">›</span>
+                  </span>
+                </button>
+              )}
+              {/* 매달 다르게 버는 사람(투잡·자영업·영업)을 위한 추가 버튼 */}
+              <button
+                className="salary-add-btn"
+                onClick={() => navigate({ name: "add", category: "salary" })}
+              >
+                ＋ 이번에 더 번 돈 추가
+              </button>
+            </>
           )}
         </div>
 
@@ -307,9 +336,10 @@ export function HomeScreen() {
 }
 
 function RecordList({ records }: { records: Record[] }) {
+  const sorted = sortForDisplay(records);
   return (
     <div className="card list-card">
-      {records.map((r) => (
+      {sorted.map((r) => (
         <RecordItem
           key={r.id}
           record={r}

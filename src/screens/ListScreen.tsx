@@ -3,7 +3,7 @@ import { navigate } from "../router";
 import { loadRecords } from "../storage";
 import type { Category, Record } from "../types";
 import { CATEGORY_LABEL } from "../types";
-import { formatMoney } from "../utils";
+import { formatMoney, sortForDisplay } from "../utils";
 import { RecordItem } from "../components/RecordItem";
 
 type Filter = "all" | Category;
@@ -31,7 +31,7 @@ export function ListScreen({ initialFilter }: ListProps) {
 
   const filtered = useMemo(() => {
     const q = query.trim();
-    return all.filter((r) => {
+    const list = all.filter((r) => {
       if (filter !== "all" && r.category !== filter) return false;
       if (q) {
         const hay = `${r.name} ${r.reason ?? ""} ${r.memo ?? ""}`;
@@ -39,17 +39,24 @@ export function ListScreen({ initialFilter }: ListProps) {
       }
       return true;
     });
+    // 큰 수 → 작은 수 (+ 먼저, - 나중) 보기 편하게 정렬
+    return sortForDisplay(list);
   }, [all, filter, query]);
 
   const total = useMemo(() => {
-    let inn = 0;
-    let out = 0;
+    let inn = 0; // 들어온 돈(급여·경조사 받음)
+    let out = 0; // 나간 돈(고정지출·경조사 냄)
+    let save = 0; // 모은 돈(저축·투자)
     for (const r of filtered) {
       if (r.flow === "in") inn += r.amount;
-      else out += r.amount; // out + save 모두 나가는 쪽으로 표시
+      else if (r.flow === "save") save += r.amount;
+      else out += r.amount;
     }
-    return { inn, out, count: filtered.length };
+    return { inn, out, save, count: filtered.length };
   }, [filtered]);
+
+  // 저축·투자 필터에서는 '모은 돈'을, 그 외에는 나간/들어온 돈을 보여줘요
+  const showSave = filter === "saving";
 
   return (
     <div className="page">
@@ -88,10 +95,17 @@ export function ListScreen({ initialFilter }: ListProps) {
             <div className="ls2-k">총 기록</div>
             <div className="ls2-v">{total.count}건</div>
           </div>
-          <div className="ls2-item">
-            <div className="ls2-k">나간 돈</div>
-            <div className="ls2-v given">-{formatMoney(total.out)}원</div>
-          </div>
+          {showSave ? (
+            <div className="ls2-item">
+              <div className="ls2-k">모은 돈</div>
+              <div className="ls2-v saved">+{formatMoney(total.save)}원</div>
+            </div>
+          ) : (
+            <div className="ls2-item">
+              <div className="ls2-k">나간 돈</div>
+              <div className="ls2-v given">-{formatMoney(total.out)}원</div>
+            </div>
+          )}
           <div className="ls2-item">
             <div className="ls2-k">들어온 돈</div>
             <div className="ls2-v received">+{formatMoney(total.inn)}원</div>

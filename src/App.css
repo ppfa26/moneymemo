@@ -314,20 +314,68 @@
   padding: 0 18px;
 }
 
+/* 이번 기간 추가로 번 돈(투잡·부수입) 요약 행 */
+.salary-extra {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding: 12px 16px;
+  background: #fff8f2;
+  border: 1.5px solid #ffe0c4;
+  border-radius: 14px;
+}
+.salary-extra .se-k {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink, #191f28);
+  letter-spacing: -0.3px;
+}
+.salary-extra .se-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.salary-extra .se-v {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--received);
+  letter-spacing: -0.3px;
+}
+.salary-extra .stat-arrow {
+  color: var(--text-weak);
+  font-size: 18px;
+  line-height: 1;
+}
+/* 이번에 더 번 돈 추가 버튼 (매달 다르게 버는 사람용) */
+.salary-add-btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 11px 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--orange);
+  background: #fff;
+  border: 1.5px dashed #ffc79c;
+  border-radius: 12px;
+  letter-spacing: -0.3px;
+}
+.salary-add-btn:active {
+  background: #fff6ef;
+}
+
 /* ===== 남은돈 계산 브레이크다운 ===== */
 .calc-rows {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.3);
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 }
 .calc-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: -0.3px;
 }
@@ -340,14 +388,27 @@
   color: #fff;
   white-space: nowrap;
 }
-/* 모았어요 행: 계산에 안 들어가는 참고값이라 살짝 흐리게 */
-.calc-row.calc-row-note {
-  opacity: 0.82;
+/* 쓰고 남은 돈 (요약카드 강조 합계) */
+.calc-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.32);
 }
-.calc-row.calc-row-note .ck,
-.calc-row.calc-row-note .cv {
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.85);
+.calc-total .ct-k {
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+}
+.calc-total .ct-v {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.6px;
+  white-space: nowrap;
 }
 
 /* 가로 스크롤 세그먼트 (필터가 많을 때) */
@@ -505,23 +566,13 @@
   letter-spacing: -0.3px;
 }
 .summary-net {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 .summary-net .net-label {
-  font-size: 12px;
-  color: var(--on-accent-sub);
-  margin-bottom: 4px;
-}
-.summary-net .net-value {
-  font-size: 26px;
+  font-size: 15px;
   font-weight: 800;
-  letter-spacing: -0.8px;
-}
-.summary-net .net-sub {
-  font-size: 11px;
-  color: var(--on-accent-sub);
-  margin-top: 3px;
-  letter-spacing: -0.3px;
+  color: #fff;
+  letter-spacing: -0.4px;
 }
 .summary-row {
   display: flex;
@@ -1038,6 +1089,9 @@ textarea.text-input {
 }
 .list-summary2 .ls2-v.received {
   color: var(--received);
+}
+.list-summary2 .ls2-v.saved {
+  color: var(--orange);
 }
 
 /* 내역: 이 종류로 바로 추가 버튼 */

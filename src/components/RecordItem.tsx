@@ -50,7 +50,7 @@ export function RecordItem({ record, onClick }: Props) {
       <div className="record-amount">
         <div className={`amt ${amountClass(record.flow)}`}>
           {amountSign(record.flow)}
-          {formatMoney(record.amount)}
+          {formatMoney(record.amount)}원
         </div>
         <div className="dir">{rightLabel}</div>
       </div>
