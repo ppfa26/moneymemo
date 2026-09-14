@@ -74,7 +74,13 @@ export function initRoute(): void {
     else if (screen === "settings") initial = { name: "settings" };
     else if (screen === "terms") initial = { name: "terms" };
     else if (screen === "privacy") initial = { name: "privacy" };
-    else if (screen === "add") initial = { name: "add" };
+    else if (screen === "add")
+      initial = {
+        name: "add",
+        ...(filter && validFilters.includes(filter)
+          ? { category: filter as Category }
+          : {}),
+      };
     else if (screen === "detail" && id) initial = { name: "detail", id };
   } catch {
     /* noop */

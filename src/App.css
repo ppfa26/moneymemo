@@ -25,25 +25,25 @@
 
 /* ★ 커스텀 헤더 - 뒤로가기(←) 버튼 없음! 제목만. 토스 상단바가 back 제공. */
 .page-header {
-  padding: 16px 20px 8px;
+  padding: 14px 20px 6px;
 }
 .page-header h1 {
-  font-size: 23px;
+  font-size: 21px;
   font-weight: 800;
   letter-spacing: -0.6px;
   color: var(--navy);
   line-height: 1.2;
 }
 .page-header .sub {
-  margin-top: 4px;
-  font-size: 14px;
+  margin-top: 3px;
+  font-size: 13px;
   color: var(--text-sub);
   letter-spacing: -0.3px;
 }
 
 .page-body {
   flex: 1;
-  padding: 4px 20px 28px; /* 상하단 일정한 공백 */
+  padding: 4px 20px 24px; /* 상하단 일정한 공백 */
 }
 
 .home-header {
@@ -81,15 +81,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
-  padding: 13px 0;
-  border-radius: 14px;
+  gap: 4px;
+  padding: 10px 0;
+  border-radius: 12px;
   background: #f2f4f6;
   border: 1.5px solid transparent;
   transition: all 0.15s ease;
 }
 .cat-btn .cat-emoji {
-  font-size: 22px;
+  font-size: 20px;
 }
 .cat-btn .cat-label {
   font-size: 12px;
@@ -719,12 +719,12 @@
 
 /* ===== 폼 ===== */
 .field {
-  margin-bottom: 24px;
+  margin-bottom: 13px;
 }
 .field-hint {
-  margin-top: 8px;
+  margin-top: 6px;
   font-size: 12px;
-  line-height: 1.5;
+  line-height: 1.45;
   color: var(--text-weak);
   letter-spacing: -0.3px;
 }
@@ -733,10 +733,10 @@
 }
 .field > label {
   display: block;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   letter-spacing: -0.3px;
 }
 .text-input,
@@ -744,9 +744,9 @@
   width: 100%;
   border: none;
   background: #f2f4f6;
-  border-radius: 14px;
-  padding: 16px;
-  font-size: 16px;
+  border-radius: 12px;
+  padding: 13px 14px;
+  font-size: 15px;
   color: var(--text);
   transition: box-shadow 0.15s ease;
 }
@@ -761,25 +761,25 @@
 }
 textarea.text-input {
   resize: none;
-  min-height: 84px;
+  min-height: 64px;
 }
 
 /* 세그먼트(받음/줌, 관계, 종류 등) */
 .segment {
   display: flex;
-  gap: 8px;
+  gap: 7px;
   flex-wrap: wrap;
 }
 .segment.two > .seg {
   flex: 1;
 }
 .seg {
-  padding: 13px 16px;
-  border-radius: 14px;
+  padding: 10px 14px;
+  border-radius: 12px;
   background: #f2f4f6;
   color: var(--text-sub);
   font-weight: 700;
-  font-size: 15px;
+  font-size: 14px;
   letter-spacing: -0.3px;
   transition: all 0.12s ease;
 }
@@ -805,8 +805,8 @@ textarea.text-input {
   align-items: baseline;
   gap: 6px;
   background: #f2f4f6;
-  border-radius: 14px;
-  padding: 18px 16px;
+  border-radius: 12px;
+  padding: 13px 14px;
   transition: box-shadow 0.15s ease;
 }
 .amount-input:focus-within {
@@ -818,7 +818,7 @@ textarea.text-input {
   border: none;
   outline: none;
   background: transparent;
-  font-size: 30px;
+  font-size: 24px;
   font-weight: 800;
   text-align: right;
   color: var(--navy);
@@ -829,7 +829,7 @@ textarea.text-input {
   color: #c4ccd4;
 }
 .amount-input .won {
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--text-sub);
 }
@@ -837,15 +837,22 @@ textarea.text-input {
 /* 금액 빠른 선택 칩 */
 .chips {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 12px;
+  gap: 7px;
+  margin-top: 9px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.chips::-webkit-scrollbar {
+  display: none;
 }
 .chip {
-  padding: 10px 14px;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  padding: 8px 13px;
   border-radius: 999px;
   background: #f2f4f6;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-sub);
   letter-spacing: -0.3px;
@@ -863,9 +870,9 @@ textarea.text-input {
 }
 .photo-thumb {
   position: relative;
-  width: 88px;
-  height: 88px;
-  border-radius: 16px;
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
   overflow: hidden;
   background: #f2f4f6;
 }
@@ -888,9 +895,9 @@ textarea.text-input {
   text-align: center;
 }
 .photo-add {
-  width: 88px;
-  height: 88px;
-  border-radius: 16px;
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
   background: #f2f4f6;
   color: var(--text-weak);
   display: flex;
@@ -1102,6 +1109,21 @@ textarea.text-input {
 /* 내역: 이 종류로 바로 추가 버튼 */
 .add-in-list {
   margin-bottom: 18px;
+}
+/* 내역 화면 상단 안내 문구 */
+.list-guide {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: #fff8f2;
+  border: 1px solid #ffe0c4;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-sub);
+  letter-spacing: -0.3px;
+}
+.list-guide b {
+  color: var(--orange);
 }
 
 /* ===== (구) 내역 화면 합계 바 ===== */

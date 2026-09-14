@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { navigate } from "../router";
-import { getMonthlySalary, loadRecords, setMonthlySalary } from "../storage";
+import { loadRecords } from "../storage";
 import type { Category, Record } from "../types";
 import { CATEGORY_LABEL } from "../types";
 import { formatMoney, sortForDisplay } from "../utils";
@@ -28,22 +28,6 @@ export function ListScreen({ initialFilter }: ListProps) {
   const all = useMemo(() => loadRecords(), []);
   const [filter, setFilter] = useState<Filter>(initialFilter ?? "all");
   const [query, setQuery] = useState("");
-
-  // 급여 화면: 매달 기본으로 버는 돈(월급) 설정
-  const [salary, setSalary] = useState<number>(() => getMonthlySalary());
-  const [editingSalary, setEditingSalary] = useState(false);
-  const [salaryInput, setSalaryInput] = useState<string>("");
-  const salaryInputNum = Number(salaryInput.replace(/[^0-9]/g, "")) || 0;
-  function startEditSalary() {
-    setSalaryInput(salary ? String(salary) : "");
-    setEditingSalary(true);
-  }
-  function saveSalary() {
-    const v = Number(salaryInput.replace(/[^0-9]/g, "")) || 0;
-    setMonthlySalary(v);
-    setSalary(v);
-    setEditingSalary(false);
-  }
 
   const filtered = useMemo(() => {
     const q = query.trim();
@@ -95,39 +79,12 @@ export function ListScreen({ initialFilter }: ListProps) {
           ))}
         </div>
 
-        {/* 급여 화면: 매달 기본으로 버는 돈(월급) 설정 */}
+        {/* 급여 화면 안내: 실제 받은 급여를 달마다 넣어요 */}
         {filter === "salary" && (
-          <div className="salary-set-card">
-            <div className="ssc-head">💰 매달 기본으로 버는 돈</div>
-            {editingSalary ? (
-              <div className="salary-edit">
-                <div className="amount-input">
-                  <input
-                    inputMode="numeric"
-                    autoFocus
-                    placeholder="0"
-                    value={salaryInput ? formatMoney(salaryInputNum) : ""}
-                    onChange={(e) => setSalaryInput(e.target.value)}
-                  />
-                  <span className="won">원</span>
-                </div>
-                <button className="btn btn-primary" onClick={saveSalary}>
-                  저장
-                </button>
-              </div>
-            ) : (
-              <button className="salary-set-row" onClick={startEditSalary}>
-                <span className="ssr-v">
-                  {salary > 0 ? `${formatMoney(salary)}원` : "입력하기"}
-                </span>
-                <span className="edit-hint">수정 ✎</span>
-              </button>
-            )}
-            <p className="field-hint">
-              매달 고정으로 들어오는 월급이에요. 투잡·부수입처럼 매달 다르게 번
-              돈은 아래 <b>＋ 급여 추가하기</b>로 넣어요.
-            </p>
-          </div>
+          <p className="list-guide">
+            매달 받은 급여를 <b>＋ 급여 추가하기</b>로 넣어요. 매달 다르게 벌거나
+            지난달을 안 넣었어도, 넣은 만큼만 합계에 반영돼요.
+          </p>
         )}
 
         {/* 검색 */}

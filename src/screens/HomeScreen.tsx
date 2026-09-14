@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { navigate } from "../router";
-import { clearAllData, getMonthlySalary, loadRecords } from "../storage";
+import { clearAllData, loadRecords } from "../storage";
 import type { InvestType, Record } from "../types";
 import { INVEST_TYPE_EMOJI, INVEST_TYPE_LABEL } from "../types";
 import { formatMoney, sortForDisplay, todayISO } from "../utils";
@@ -17,8 +17,6 @@ export function HomeScreen() {
   const [mode, setMode] = useState<Mode>("month");
   const [year, setYear] = useState(curYear);
   const [month, setMonth] = useState(curMonth);
-
-  const salary = useMemo(() => getMonthlySalary(), []);
 
   // 선택 기간 기록
   const filtered = useMemo(() => {
@@ -66,21 +64,6 @@ export function HomeScreen() {
     [records],
   );
 
-  // ★ 매월 고정지출 합계: 등록된 고정지출 항목들의 월 합계 (매달 반복 나가는 돈)
-  //   중복 방지를 위해 같은 항목명은 한 번만 (가장 최근 금액) 집계해요.
-  const monthlyExpense = useMemo(() => {
-    const latest = new Map<string, number>();
-    records
-      .filter((r) => r.category === "expense")
-      .sort((a, b) => b.createdAt - a.createdAt)
-      .forEach((r) => {
-        if (!latest.has(r.name)) latest.set(r.name, r.amount);
-      });
-    let sum = 0;
-    latest.forEach((v) => (sum += v));
-    return sum;
-  }, [records]);
-
   // ★ 투자 자산: 저축·투자 기록을 종류별(예금/주식/부동산/코인/기타)로 누적 합산
   const investByType = useMemo(() => {
     const map = new Map<InvestType, number>();
@@ -94,9 +77,10 @@ export function HomeScreen() {
     return [...map.entries()].sort((a, b) => b[1] - a[1]);
   }, [records]);
 
-  // 급여: 월별=설정값, 연도별=×12 + 직접입력 급여 기록
-  const salaryBase = mode === "year" ? salary * 12 : salary;
-  const earned = salaryBase + sums.salaryRecords + sums.giftIn; // 번 돈(급여+추가수입+경조사 받음)
+  // ★ 급여: 고객이 실제 작성한 급여 기록만 합산해요.
+  //   (월×12 같은 임의 추정 없음 → 월별이든 연도별이든 '적은 것만' 정확히 보여줘요.
+  //    매달 다르게 벌면 매달 급여를 직접 넣고, 9월에 시작했으면 1~8월도 직접 넣어요)
+  const earned = sums.salaryRecords + sums.giftIn; // 번 돈(급여 기록+경조사 받음)
   const spent = sums.expense + sums.giftOut; // 쓴 돈(고정지출+경조사 냄)
   const saved = sums.saving; // 이 기간 모은 돈(저축·투자)
   // ★ 쓰고 남은 돈 = 번 돈 − 쓴 돈 − 모은 돈.
@@ -221,26 +205,32 @@ export function HomeScreen() {
           )}
         </div>
 
-        {/* ① 매달 버는 돈 - 눌러서 급여 내역/추가 (고정지출과 동일한 방식) */}
+        {/* ① 번 돈 (실제 작성한 급여만) - 눌러서 급여 내역/추가 */}
         <button
           className="stat-row tappable"
           onClick={() => navigate({ name: "list", filter: "salary" })}
         >
-          <span className="sk">💰 매달 버는 돈</span>
+          <span className="sk">
+            💰 {mode === "year" ? "올해" : "이달"} 번 돈
+          </span>
           <span className="sv-wrap">
-            <span className="sv received">{formatMoney(earned)}원</span>
+            <span className="sv received">
+              {formatMoney(sums.salaryRecords)}원
+            </span>
             <span className="stat-arrow">›</span>
           </span>
         </button>
 
-        {/* ② 매월 고정지출 (자동 합계) - 눌러서 내역 보기 */}
+        {/* ② 이 기간 고정지출 - 눌러서 내역 보기 */}
         <button
           className="stat-row tappable"
           onClick={() => navigate({ name: "list", filter: "expense" })}
         >
-          <span className="sk">💳 매월 고정지출</span>
+          <span className="sk">
+            💳 {mode === "year" ? "올해" : "이달"} 고정지출
+          </span>
           <span className="sv-wrap">
-            <span className="sv given">{formatMoney(monthlyExpense)}원</span>
+            <span className="sv given">{formatMoney(sums.expense)}원</span>
             <span className="stat-arrow">›</span>
           </span>
         </button>
