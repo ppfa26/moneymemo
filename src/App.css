@@ -1085,6 +1085,12 @@ textarea.text-input {
   margin-top: 14px;
   margin-bottom: 18px; /* 아래 목록과 붙지 않게 여백 */
 }
+/* 4개 항목: 2×2 그리드 (총 기록 / 들어온 돈 / 나간 돈 / 모은 돈) */
+.list-summary2.grid4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
 .list-summary2 .ls2-item {
   flex: 1;
   background: #f2f4f6;
@@ -1255,6 +1261,12 @@ textarea.text-input {
 .export-preview-nums > div {
   flex: 1;
 }
+/* 4개 항목: 2×2 그리드 (들어온/나간/모은/쓰고 남은) */
+.export-preview-nums.grid4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 10px;
+}
 .export-preview-nums .k {
   font-size: 12px;
   color: var(--on-accent-sub);
@@ -1265,12 +1277,16 @@ textarea.text-input {
   font-weight: 800;
   letter-spacing: -0.4px;
   color: #fff;
+  white-space: nowrap;
 }
 .export-preview-nums .v.received {
   color: #fff;
 }
 .export-preview-nums .v.given {
   color: #ffe0b8;
+}
+.export-preview-nums .v.saved {
+  color: #fff4e8;
 }
 
 /* ===== 내보내기: 원탭 다운로드 카드 ===== */

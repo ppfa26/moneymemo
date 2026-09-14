@@ -47,13 +47,15 @@ export function ExportScreen({ onToast }: Props) {
   }, [all, cat, fromISO, toISO]);
 
   const totals = useMemo(() => {
-    let inn = 0;
-    let out = 0;
+    let inn = 0; // 들어온 돈(급여·경조사 받음)
+    let out = 0; // 나간 돈(고정지출·경조사 냄)
+    let save = 0; // 모은 돈(저축·투자)
     for (const r of records) {
       if (r.flow === "in") inn += r.amount;
+      else if (r.flow === "save") save += r.amount;
       else out += r.amount;
     }
-    return { inn, out, count: records.length };
+    return { inn, out, save, count: records.length };
   }, [records]);
 
   async function handleDownload(format: Format) {
@@ -164,20 +166,24 @@ export function ExportScreen({ onToast }: Props) {
             </span>
             <span className="count">{totals.count}건</span>
           </div>
-          <div className="export-preview-nums">
-            <div>
-              <div className="k">나간 돈</div>
-              <div className="v given">{formatMoney(totals.out)}원</div>
-            </div>
+          <div className="export-preview-nums grid4">
             <div>
               <div className="k">들어온 돈</div>
-              <div className="v received">{formatMoney(totals.inn)}원</div>
+              <div className="v received">+{formatMoney(totals.inn)}원</div>
             </div>
             <div>
-              <div className="k">합계</div>
+              <div className="k">나간 돈</div>
+              <div className="v given">-{formatMoney(totals.out)}원</div>
+            </div>
+            <div>
+              <div className="k">모은 돈</div>
+              <div className="v saved">+{formatMoney(totals.save)}원</div>
+            </div>
+            <div>
+              <div className="k">쓰고 남은 돈</div>
               <div className="v">
-                {totals.inn - totals.out >= 0 ? "+" : ""}
-                {formatMoney(totals.inn - totals.out)}원
+                {totals.inn - totals.out - totals.save >= 0 ? "+" : "-"}
+                {formatMoney(Math.abs(totals.inn - totals.out - totals.save))}원
               </div>
             </div>
           </div>

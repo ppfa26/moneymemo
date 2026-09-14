@@ -55,9 +55,6 @@ export function ListScreen({ initialFilter }: ListProps) {
     return { inn, out, save, count: filtered.length };
   }, [filtered]);
 
-  // 저축·투자 필터에서는 '모은 돈'을, 그 외에는 나간/들어온 돈을 보여줘요
-  const showSave = filter === "saving";
-
   return (
     <div className="page">
       <div className="page-header">
@@ -97,26 +94,23 @@ export function ListScreen({ initialFilter }: ListProps) {
           />
         </div>
 
-        {/* 합계 요약 (라벨을 붙여 이해하기 쉽게) */}
-        <div className="list-summary2">
+        {/* 합계 요약 (2×2: 총 기록 / 들어온 돈 / 나간 돈 / 모은 돈) */}
+        <div className="list-summary2 grid4">
           <div className="ls2-item">
             <div className="ls2-k">총 기록</div>
             <div className="ls2-v">{total.count}건</div>
           </div>
-          {showSave ? (
-            <div className="ls2-item">
-              <div className="ls2-k">모은 돈</div>
-              <div className="ls2-v saved">+{formatMoney(total.save)}원</div>
-            </div>
-          ) : (
-            <div className="ls2-item">
-              <div className="ls2-k">나간 돈</div>
-              <div className="ls2-v given">-{formatMoney(total.out)}원</div>
-            </div>
-          )}
           <div className="ls2-item">
             <div className="ls2-k">들어온 돈</div>
             <div className="ls2-v received">+{formatMoney(total.inn)}원</div>
+          </div>
+          <div className="ls2-item">
+            <div className="ls2-k">나간 돈</div>
+            <div className="ls2-v given">-{formatMoney(total.out)}원</div>
+          </div>
+          <div className="ls2-item">
+            <div className="ls2-k">모은 돈</div>
+            <div className="ls2-v saved">+{formatMoney(total.save)}원</div>
           </div>
         </div>
 
