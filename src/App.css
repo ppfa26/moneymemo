@@ -44,7 +44,7 @@
 .page-body {
   /* flex:1 제거 → 콘텐츠 높이만큼만 차지해서 아래 큰 빈 공간이 안 생겨요.
      (.page가 스크롤 컨테이너라 내용이 길면 자연스럽게 스크롤돼요) */
-  padding: 4px 20px 24px; /* 상하단 일정한 공백 */
+  padding: 8px 20px 20px; /* 상하좌우 일정한 공백 (좌우20 · 상8 · 하20) */
 }
 
 .home-header {
@@ -485,7 +485,7 @@
 .home-body {
   display: flex;
   flex-direction: column;
-  padding: 4px 20px 16px; /* 하단 여백 축소 (버튼~배너 사이 빈공간 줄임) */
+  padding: 8px 20px 20px; /* 다른 화면과 동일 (좌우20 · 상8 · 하20) */
 }
 /* 홈 자식 요소들은 부모 패딩(20px) 안에서 100% 폭을 채워 서로 정렬돼요 */
 .home-body > .mode-toggle,
@@ -1689,10 +1689,10 @@ textarea.text-input {
 
 /* ===== 관리 리포트 화면 ===== */
 .report-body {
-  padding: 4px 20px 28px;
+  padding: 8px 20px 20px; /* 다른 화면과 동일 (좌우20 · 상8 · 하20) */
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px; /* 카드 간격도 표준 12px로 통일 */
 }
 
 .report-empty {
