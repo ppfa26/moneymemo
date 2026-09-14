@@ -9,7 +9,6 @@ import {
   decideLaunchInterstitial,
   markLaunchInterstitialShown,
 } from "./ads/interstitialPolicy";
-import type { Kind } from "./types";
 import { HomeScreen } from "./screens/HomeScreen";
 import { ListScreen } from "./screens/ListScreen";
 import { AddEditScreen } from "./screens/AddEditScreen";
@@ -28,8 +27,6 @@ export default function App() {
   useSafeArea();
   const route = useRoute();
   const [toast, setToast] = useState<string | null>(null);
-  // 홈/내보내기에서 공유하는 활성 탭(고정지출/경조사비)
-  const [kind, setKind] = useState<Kind>("expense");
 
   const showToast = useCallback((msg: string) => setToast(msg), []);
 
@@ -76,17 +73,17 @@ export default function App() {
   function renderScreen() {
     switch (route.name) {
       case "home":
-        return <HomeScreen kind={kind} onKindChange={setKind} />;
+        return <HomeScreen />;
       case "list":
         return <ListScreen />;
       case "add":
-        return <AddEditScreen kind={route.kind} onToast={showToast} />;
+        return <AddEditScreen category={route.category} onToast={showToast} />;
       case "edit":
         return <AddEditScreen editId={route.id} onToast={showToast} />;
       case "detail":
         return <DetailScreen id={route.id} onToast={showToast} />;
       case "export":
-        return <ExportScreen kind={kind} onKindChange={setKind} onToast={showToast} />;
+        return <ExportScreen onToast={showToast} />;
       case "settings":
         return <SettingsScreen onToast={showToast} />;
       case "terms":
@@ -94,7 +91,7 @@ export default function App() {
       case "privacy":
         return <LegalScreen kind="privacy" />;
       default:
-        return <HomeScreen kind={kind} onKindChange={setKind} />;
+        return <HomeScreen />;
     }
   }
 }

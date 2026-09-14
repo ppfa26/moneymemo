@@ -1,13 +1,21 @@
 import { useMemo, useState } from "react";
 import { navigate } from "../router";
 import { loadRecords } from "../storage";
-import type { Kind, Record } from "../types";
-import { KIND_LABEL } from "../types";
+import type { Category, Record } from "../types";
+import { CATEGORY_LABEL } from "../types";
 import { formatMoney } from "../utils";
 import { RecordItem } from "../components/RecordItem";
 import { AdBanner } from "../components/AdBanner";
 
-type Filter = "all" | Kind;
+type Filter = "all" | Category;
+
+const FILTERS: [Filter, string][] = [
+  ["all", "전체"],
+  ["salary", CATEGORY_LABEL.salary],
+  ["expense", CATEGORY_LABEL.expense],
+  ["gift", CATEGORY_LABEL.gift],
+  ["saving", CATEGORY_LABEL.saving],
+];
 
 export function ListScreen() {
   const all = useMemo(() => loadRecords(), []);
@@ -17,29 +25,23 @@ export function ListScreen() {
   const filtered = useMemo(() => {
     const q = query.trim();
     return all.filter((r) => {
-      if (filter !== "all" && r.kind !== filter) return false;
+      if (filter !== "all" && r.category !== filter) return false;
       if (q) {
-        const hay =
-          r.name +
-          " " +
-          (r.kind === "gift" ? r.reason : "") +
-          " " +
-          (r.memo ?? "");
+        const hay = `${r.name} ${r.reason ?? ""} ${r.memo ?? ""}`;
         if (!hay.includes(q)) return false;
       }
       return true;
     });
   }, [all, filter, query]);
 
-  // 부호 합산: in(+) / out(-)
   const total = useMemo(() => {
     let inn = 0;
     let out = 0;
     for (const r of filtered) {
       if (r.flow === "in") inn += r.amount;
-      else out += r.amount;
+      else out += r.amount; // out + save 모두 나가는 쪽으로 표시
     }
-    return { inn, out, net: inn - out, count: filtered.length };
+    return { inn, out, count: filtered.length };
   }, [filtered]);
 
   return (
@@ -50,15 +52,9 @@ export function ListScreen() {
       </div>
 
       <div className="page-body">
-        {/* 종류 필터 */}
-        <div className="segment">
-          {(
-            [
-              ["all", "전체"],
-              ["expense", KIND_LABEL.expense],
-              ["gift", KIND_LABEL.gift],
-            ] as [Filter, string][]
-          ).map(([v, label]) => (
+        {/* 카테고리 필터 (가로 스크롤) */}
+        <div className="segment scroll-x">
+          {FILTERS.map(([v, label]) => (
             <button
               key={v}
               className={`seg ${filter === v ? "active" : ""}`}
@@ -89,7 +85,7 @@ export function ListScreen() {
           </span>
         </div>
 
-        {/* 배너 광고 */}
+        {/* 배너 */}
         <AdBanner />
 
         {/* 목록 */}

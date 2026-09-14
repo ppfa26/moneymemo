@@ -1,7 +1,13 @@
 import { useMemo, useState } from "react";
 import { goBack, navigate } from "../router";
 import { deleteRecord, getRecord } from "../storage";
-import { KIND_LABEL, PAY_METHOD_LABEL } from "../types";
+import {
+  amountClass,
+  amountSign,
+  CATEGORY_EMOJI,
+  CATEGORY_LABEL,
+  PAY_METHOD_LABEL,
+} from "../types";
 import { formatDate, formatMoney } from "../utils";
 
 interface Props {
@@ -37,23 +43,12 @@ export function DetailScreen({ id, onToast }: Props) {
     );
   }
 
-  const isExpense = record.kind === "expense";
-  const emoji = isExpense
+  const isGift = record.category === "gift";
+  const flowText = isGift
     ? record.flow === "in"
-      ? "💰"
-      : "💳"
-    : record.flow === "in"
-      ? "🎁"
-      : "💸";
-  const flowText = isExpense
-    ? record.flow === "in"
-      ? "저축·투자"
-      : "지출"
-    : record.flow === "in"
       ? "받았어요"
-      : "냈어요";
-  const sign = record.flow === "in" ? "+" : "-";
-  const amtClass = record.flow === "in" ? "received" : "given";
+      : "냈어요"
+    : CATEGORY_LABEL[record.category];
 
   function handleDelete() {
     deleteRecord(record!.id);
@@ -65,10 +60,11 @@ export function DetailScreen({ id, onToast }: Props) {
     <div className="page">
       <div className="page-header">
         <h1>
-          {emoji} {record.name}
+          {CATEGORY_EMOJI[record.category]} {record.name}
         </h1>
         <div className="sub">
-          {KIND_LABEL[record.kind]} · {flowText}
+          {CATEGORY_LABEL[record.category]}
+          {isGift ? ` · ${flowText}` : ""}
         </div>
       </div>
 
@@ -76,8 +72,8 @@ export function DetailScreen({ id, onToast }: Props) {
         {/* 금액 강조 */}
         <div className="card detail-hero">
           <div className="dh-dir">{flowText}</div>
-          <div className={`dh-amt amt ${amtClass}`}>
-            {sign}
+          <div className={`dh-amt amt ${amountClass(record.flow)}`}>
+            {amountSign(record.flow)}
             {formatMoney(record.amount)}원
           </div>
         </div>
@@ -85,36 +81,35 @@ export function DetailScreen({ id, onToast }: Props) {
         {/* 정보 */}
         <div className="card">
           <div className="info-row">
-            <span className="k">{isExpense ? "항목" : "이름"}</span>
+            <span className="k">{isGift ? "이름" : "항목"}</span>
             <span className="v">{record.name}</span>
           </div>
-          {record.kind === "expense" ? (
-            <>
-              <div className="info-row">
-                <span className="k">결제방법</span>
-                <span className="v">{PAY_METHOD_LABEL[record.payMethod]}</span>
-              </div>
-              <div className="info-row">
-                <span className="k">결제일</span>
-                <span className="v">매달 {record.payDay}일</span>
-              </div>
-              <div className="info-row">
-                <span className="k">시작일</span>
-                <span className="v">{formatDate(record.date)}</span>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="info-row">
-                <span className="k">사유</span>
-                <span className="v">{record.reason}</span>
-              </div>
-              <div className="info-row">
-                <span className="k">날짜</span>
-                <span className="v">{formatDate(record.date)}</span>
-              </div>
-            </>
+          <div className="info-row">
+            <span className="k">종류</span>
+            <span className="v">{CATEGORY_LABEL[record.category]}</span>
+          </div>
+          {isGift && record.reason && (
+            <div className="info-row">
+              <span className="k">사유</span>
+              <span className="v">{record.reason}</span>
+            </div>
           )}
+          {!isGift && record.payMethod && (
+            <div className="info-row">
+              <span className="k">{record.category === "salary" ? "입금 방법" : "결제방법"}</span>
+              <span className="v">{PAY_METHOD_LABEL[record.payMethod]}</span>
+            </div>
+          )}
+          {!isGift && record.payDay ? (
+            <div className="info-row">
+              <span className="k">매달 {record.category === "salary" ? "입금일" : "결제일"}</span>
+              <span className="v">매달 {record.payDay}일</span>
+            </div>
+          ) : null}
+          <div className="info-row">
+            <span className="k">{isGift ? "날짜" : "시작일"}</span>
+            <span className="v">{formatDate(record.date)}</span>
+          </div>
           {record.memo && (
             <div className="info-row">
               <span className="k">메모</span>
@@ -175,7 +170,7 @@ export function DetailScreen({ id, onToast }: Props) {
         )}
       </div>
 
-      {/* 사진 확대 오버레이 */}
+      {/* 사진 확대 */}
       {zoomPhoto && (
         <div
           onClick={() => setZoomPhoto(null)}

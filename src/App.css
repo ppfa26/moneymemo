@@ -66,29 +66,122 @@
   transform: scale(0.95);
 }
 
-/* ===== 고정지출/경조사비 탭 (주요 전환) ===== */
-.kind-tabs {
-  display: flex;
+/* ===== 카테고리 선택 그리드 (입력 화면) ===== */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
-  margin-bottom: 14px;
 }
-.kind-tab {
-  flex: 1;
+.cat-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
   padding: 13px 0;
   border-radius: 14px;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.3px;
-  color: var(--text-sub);
   background: #f2f4f6;
   border: 1.5px solid transparent;
   transition: all 0.15s ease;
 }
-.kind-tab.active {
-  color: var(--orange);
+.cat-btn .cat-emoji {
+  font-size: 22px;
+}
+.cat-btn .cat-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-sub);
+  letter-spacing: -0.3px;
+}
+.cat-btn.active {
   background: #fff;
   border-color: var(--orange);
   box-shadow: 0 2px 10px rgba(255, 111, 15, 0.18);
+}
+.cat-btn.active .cat-label {
+  color: var(--orange);
+}
+
+/* ===== 급여 카드 ===== */
+.salary-card {
+  margin-top: 12px;
+}
+.salary-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 16px;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+}
+.salary-row .sk {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink, #191f28);
+  letter-spacing: -0.3px;
+}
+.salary-row .sv {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--orange);
+  letter-spacing: -0.3px;
+}
+.salary-row .edit-hint {
+  color: var(--text-weak);
+  font-size: 13px;
+}
+.salary-edit {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.salary-edit .amount-input {
+  flex: 1;
+}
+.salary-edit .btn {
+  flex: 0 0 auto;
+  padding: 0 18px;
+}
+
+/* ===== 남은돈 계산 브레이크다운 ===== */
+.calc-rows {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.calc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+.calc-row .ck {
+  color: rgba(255, 255, 255, 0.92);
+}
+.calc-row .cv {
+  font-weight: 800;
+  color: #fff;
+}
+
+/* 가로 스크롤 세그먼트 (필터가 많을 때) */
+.segment.scroll-x {
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.segment.scroll-x::-webkit-scrollbar {
+  display: none;
+}
+.segment.scroll-x .seg {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 /* ===== 월/연 토글 ===== */
@@ -343,6 +436,9 @@
 }
 .amt.given {
   color: var(--given);
+}
+.amt.saving {
+  color: var(--orange);
 }
 .record-amount .dir {
   margin-top: 3px;

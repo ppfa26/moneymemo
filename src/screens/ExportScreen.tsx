@@ -1,28 +1,31 @@
 import { useMemo, useState } from "react";
 import { loadRecords } from "../storage";
-import type { Kind } from "../types";
-import { KIND_LABEL } from "../types";
+import type { Category, Record } from "../types";
+import { CATEGORY_LABEL } from "../types";
 import { currentYear, currentYearMonth, formatMoney, todayISO } from "../utils";
-import {
-  exportExcel,
-  exportPDF,
-  filterByPeriod,
-  summarize,
-} from "../export/exportUtils";
+import { exportExcel, exportPDF } from "../export/exportUtils";
 import { AD_GROUP_IDS } from "../ads/adConfig";
 import { showRewarded } from "../ads/fullScreenAd";
 
 type Format = "excel" | "pdf";
 type Preset = "thisMonth" | "thisYear" | "all" | "custom";
+type CatFilter = "all" | Category;
 
 interface Props {
-  kind: Kind;
-  onKindChange: (k: Kind) => void;
   onToast: (msg: string) => void;
 }
 
-export function ExportScreen({ kind, onKindChange, onToast }: Props) {
+const CAT_FILTERS: [CatFilter, string][] = [
+  ["all", "전체"],
+  ["salary", CATEGORY_LABEL.salary],
+  ["expense", CATEGORY_LABEL.expense],
+  ["gift", CATEGORY_LABEL.gift],
+  ["saving", CATEGORY_LABEL.saving],
+];
+
+export function ExportScreen({ onToast }: Props) {
   const all = useMemo(() => loadRecords(), []);
+  const [cat, setCat] = useState<CatFilter>("all");
   const [preset, setPreset] = useState<Preset>("thisYear");
   const [from, setFrom] = useState(currentYear() + "-01-01");
   const [to, setTo] = useState(todayISO());
@@ -30,24 +33,28 @@ export function ExportScreen({ kind, onKindChange, onToast }: Props) {
 
   const { fromISO, toISO } = useMemo(() => {
     const today = todayISO();
-    if (preset === "thisMonth") {
-      return { fromISO: currentYearMonth() + "-01", toISO: today };
-    }
-    if (preset === "thisYear") {
-      return { fromISO: currentYear() + "-01-01", toISO: today };
-    }
-    if (preset === "all") {
-      return { fromISO: "1900-01-01", toISO: "2999-12-31" };
-    }
+    if (preset === "thisMonth") return { fromISO: currentYearMonth() + "-01", toISO: today };
+    if (preset === "thisYear") return { fromISO: currentYear() + "-01-01", toISO: today };
+    if (preset === "all") return { fromISO: "1900-01-01", toISO: "2999-12-31" };
     return { fromISO: from, toISO: to };
   }, [preset, from, to]);
 
-  const records = useMemo(
-    () => filterByPeriod(all, kind, fromISO, toISO),
-    [all, kind, fromISO, toISO],
-  );
-  const s = summarize(records);
-  const isExpense = kind === "expense";
+  const records: Record[] = useMemo(() => {
+    return all
+      .filter((r) => (cat === "all" ? true : r.category === cat))
+      .filter((r) => r.date >= fromISO && r.date <= toISO)
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }, [all, cat, fromISO, toISO]);
+
+  const totals = useMemo(() => {
+    let inn = 0;
+    let out = 0;
+    for (const r of records) {
+      if (r.flow === "in") inn += r.amount;
+      else out += r.amount;
+    }
+    return { inn, out, count: records.length };
+  }, [records]);
 
   async function handleDownload(format: Format) {
     if (busyFormat) return;
@@ -56,17 +63,13 @@ export function ExportScreen({ kind, onKindChange, onToast }: Props) {
       return;
     }
     setBusyFormat(format);
-
-    // ★ 다운로드할 때마다 짧은 광고를 보여줘요.
-    //   단, 광고가 안 뜨거나 도중에 닫혀도 다운로드는 그대로 진행해요(기능 안 가둠).
     await showRewarded(AD_GROUP_IDS.rewarded);
-
     try {
       if (format === "excel") {
-        exportExcel(kind, records, fromISO, toISO);
+        exportExcel(records, fromISO, toISO);
         onToast("엑셀 파일을 저장했어요 📊");
       } else {
-        exportPDF(kind, records, fromISO, toISO);
+        exportPDF(records, fromISO, toISO);
         onToast("PDF를 만들었어요 📄 (인쇄 → PDF로 저장)");
       }
     } catch {
@@ -85,9 +88,6 @@ export function ExportScreen({ kind, onKindChange, onToast }: Props) {
           ? "전체 기간"
           : "선택한 기간";
 
-  const outLabel = isExpense ? "지출" : "낸 돈";
-  const inLabel = isExpense ? "저축·투자" : "받은 돈";
-
   return (
     <div className="page">
       <div className="page-header">
@@ -96,18 +96,20 @@ export function ExportScreen({ kind, onKindChange, onToast }: Props) {
       </div>
 
       <div className="page-body">
-        {/* 고정지출 / 경조사비 탭 전환 */}
-        <div className="kind-tabs">
-          {(["expense", "gift"] as Kind[]).map((k) => (
-            <button
-              key={k}
-              className={`kind-tab ${kind === k ? "active" : ""}`}
-              onClick={() => onKindChange(k)}
-            >
-              {k === "expense" ? "💳 " : "🎁 "}
-              {KIND_LABEL[k]}
-            </button>
-          ))}
+        {/* 카테고리 필터 */}
+        <div className="field">
+          <label>어떤 종류를 저장할까요?</label>
+          <div className="segment scroll-x">
+            {CAT_FILTERS.map(([v, label]) => (
+              <button
+                key={v}
+                className={`seg ${cat === v ? "active" : ""}`}
+                onClick={() => setCat(v)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* 기간 선택 */}
@@ -158,30 +160,30 @@ export function ExportScreen({ kind, onKindChange, onToast }: Props) {
         <div className="export-preview">
           <div className="export-preview-top">
             <span className="badge">
-              {KIND_LABEL[kind]} · {periodLabel}
+              {cat === "all" ? "전체" : CATEGORY_LABEL[cat]} · {periodLabel}
             </span>
-            <span className="count">{s.count}건</span>
+            <span className="count">{totals.count}건</span>
           </div>
           <div className="export-preview-nums">
             <div>
-              <div className="k">{outLabel}</div>
-              <div className="v given">{formatMoney(s.out)}원</div>
+              <div className="k">나간 돈</div>
+              <div className="v given">{formatMoney(totals.out)}원</div>
             </div>
             <div>
-              <div className="k">{inLabel}</div>
-              <div className="v received">{formatMoney(s.inn)}원</div>
+              <div className="k">들어온 돈</div>
+              <div className="v received">{formatMoney(totals.inn)}원</div>
             </div>
             <div>
               <div className="k">합계</div>
               <div className="v">
-                {s.net >= 0 ? "+" : ""}
-                {formatMoney(s.net)}원
+                {totals.inn - totals.out >= 0 ? "+" : ""}
+                {formatMoney(totals.inn - totals.out)}원
               </div>
             </div>
           </div>
         </div>
 
-        {/* 원탭 다운로드 버튼 2개 */}
+        {/* 다운로드 버튼 */}
         <div className="download-cards">
           <button
             className="download-card"

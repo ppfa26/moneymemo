@@ -1,62 +1,72 @@
 // 머니메모 - 공통 타입 정의
-// 통합형: '고정지출' 탭과 '경조사비' 탭 두 종류의 기록을 다뤄요.
+// 통합형 가계 관리: 급여(수입) 기준으로 고정지출·경조사비·저축을 빼서
+// '남은 돈'을 자동 계산해요. 모든 기록은 하나의 목록에 category로 구분돼요.
 
-/** 기록 종류(=홈 상단 탭). expense=고정지출, gift=경조사비 */
-export type Kind = "expense" | "gift";
+/** 기록 카테고리 */
+export type Category = "salary" | "expense" | "gift" | "saving";
 
 /** 돈의 방향(부호)
- *  - out: 나가는 돈(-)  (고정지출의 '지출', 경조사비의 '냄')
- *  - in : 들어오는/모이는 돈(+) (고정지출의 '저축·투자', 경조사비의 '받음')
+ *  - in : 들어오는 돈(+)  (급여, 경조사비 받음)
+ *  - out: 나가는 돈(-)     (고정지출, 경조사비 냄)
+ *  - save: 모으는 돈(저축·투자) — 남은 돈 계산에서는 빠지지만 '소비'는 아님
  */
-export type Flow = "out" | "in";
+export type Flow = "in" | "out" | "save";
 
-/** 고정지출 결제방법 */
+/** 고정지출/급여 결제·입금 방법 */
 export type PayMethod = "card" | "transfer" | "auto" | "cash" | "etc";
 
 /** 사진 첨부 (base64 data URL로 로컬 저장) */
 export interface PhotoAttachment {
   id: string;
-  dataUrl: string; // data:image/...;base64,...
+  dataUrl: string;
 }
 
-/** 공통 필드 */
-interface BaseRecord {
+/** 통합 기록 1건 */
+export interface Record {
   id: string;
-  kind: Kind;
+  category: Category;
   flow: Flow;
   name: string; // 항목/상대 이름
   amount: number; // 원 단위
-  date: string; // ISO yyyy-mm-dd (고정지출=결제일 기준일, 경조사비=날짜)
+  date: string; // ISO yyyy-mm-dd
+  /** 고정지출/급여: 결제방법 */
+  payMethod?: PayMethod;
+  /** 고정지출/급여: 매달 결제일(1~31) */
+  payDay?: number;
+  /** 경조사비: 사유 */
+  reason?: string;
   memo?: string;
   photos: PhotoAttachment[];
   createdAt: number;
   updatedAt: number;
 }
 
-/** 고정지출 기록: 이름 / 결제방법 / 결제일 / 금액 */
-export interface ExpenseRecord extends BaseRecord {
-  kind: "expense";
-  payMethod: PayMethod;
-  payDay: number; // 매달 결제일 (1~31)
-}
+// ---- 카테고리별 기본 성격 ----
 
-/** 경조사비 기록: 이름 / 사유 / 날짜 / 금액 */
-export interface GiftRecord extends BaseRecord {
-  kind: "gift";
-  reason: string; // 사유 (예: 결혼, 돌잔치, 장례 ... 자유 입력)
-}
+/** 카테고리를 고르면 기본 flow가 정해져요 (경조사비만 in/out 선택) */
+export const CATEGORY_DEFAULT_FLOW: { [K in Category]: Flow } = {
+  salary: "in",
+  expense: "out",
+  gift: "out",
+  saving: "save",
+};
 
-/** 통합 기록 타입 */
-export type Record = ExpenseRecord | GiftRecord;
+// ---- 라벨/이모지 매핑 ----
 
-// ---- 라벨 매핑 (UI 표시용) ----
-
-// TS 내장 Record와 이름 충돌을 피하기 위한 헬퍼 별칭
 type LabelMap<K extends string> = { [P in K]: string };
 
-export const KIND_LABEL: LabelMap<Kind> = {
+export const CATEGORY_LABEL: LabelMap<Category> = {
+  salary: "급여",
   expense: "고정지출",
   gift: "경조사비",
+  saving: "저축·투자",
+};
+
+export const CATEGORY_EMOJI: LabelMap<Category> = {
+  salary: "💰",
+  expense: "💳",
+  gift: "🎁",
+  saving: "🏦",
 };
 
 export const PAY_METHOD_LABEL: LabelMap<PayMethod> = {
@@ -67,14 +77,14 @@ export const PAY_METHOD_LABEL: LabelMap<PayMethod> = {
   etc: "기타",
 };
 
-/** flow 라벨은 kind에 따라 문구가 달라요 */
-export function flowLabel(kind: Kind, flow: Flow): string {
-  if (kind === "expense") return flow === "out" ? "지출" : "저축·투자";
-  return flow === "out" ? "냈어요" : "받았어요";
+/** 금액 표시 부호 (+/-) */
+export function amountSign(flow: Flow): "+" | "-" {
+  return flow === "in" ? "+" : "-";
 }
 
-/** 목록/요약에서 쓰는 짧은 라벨 */
-export function flowShort(kind: Kind, flow: Flow): string {
-  if (kind === "expense") return flow === "out" ? "지출" : "저축·투자";
-  return flow === "out" ? "냄" : "받음";
+/** 금액 색상 클래스 */
+export function amountClass(flow: Flow): "received" | "given" | "saving" {
+  if (flow === "in") return "received";
+  if (flow === "save") return "saving";
+  return "given";
 }
