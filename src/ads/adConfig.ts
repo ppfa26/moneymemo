@@ -1,17 +1,19 @@
 // 광고 그룹 ID 및 정책 상수
 //
-// ★ 개발/심사 전에는 아래 테스트 ID를 사용하고,
-//   출시 전 대표님이 토스 콘솔에서 발급받은 실제 광고 그룹 ID로 교체해요.
-//   (콘솔 → 광고 → 배너/전면/리워드 슬롯 각각 발급)
+// ★ 토스 콘솔에서 발급받은 실제 광고 그룹 ID (2026.09.14 발급, 구글 반영 완료).
+//   - 배너(문구 강조): ait.v2.live.76d5e9b68c1940ab
+//   - 전면:            ait.v2.live.36749b17be9e4872
+//   - 리워드(내보내기,1): ait.v2.live.e656a908b09e4a15
+//   배너는 홈/내역/내보내기 3곳에서 같은 배너 ID 하나를 공유해요.
 //
 // ★ 인앱 광고 2.0 (앱인토스 제공 광고) SDK만 사용해요. 외부 광고 SDK 금지.
 
 export const AD_GROUP_IDS = {
-  bannerHome: "ait-ad-test-banner-id",
-  bannerList: "ait-ad-test-banner-id",
-  bannerExport: "ait-ad-test-banner-id",
-  interstitial: "ait-ad-test-interstitial-id",
-  rewarded: "ait-ad-test-rewarded-id",
+  bannerHome: "ait.v2.live.76d5e9b68c1940ab",
+  bannerList: "ait.v2.live.76d5e9b68c1940ab",
+  bannerExport: "ait.v2.live.76d5e9b68c1940ab",
+  interstitial: "ait.v2.live.36749b17be9e4872",
+  rewarded: "ait.v2.live.e656a908b09e4a15",
 } as const;
 
 // ---- 전면광고 이탈 방지 정책 (대표님 설계 반영) ----
